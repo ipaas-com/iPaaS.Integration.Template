@@ -135,12 +135,13 @@ Since you should have already created your Data Models by now, you will be famil
 2. In this Template project, the Method ValidateConnection() in Interface\TranslationUtilities.cs utilizes the ValidateConnection(...) defined in the CallWrapper.  If using this preferred method, there is no update requied.
 
 The remaining steps are optional if they apply to the external system.  (Read more about each method within CallWrapper.cs):
-3. Define the Method HandlePrerequisite() in Interface\TranslationUtilities.cs (If applicable)
-4. Define the Method HandlePostActions() in Interface\TranslationUtilities.cs (If applicable)
-5. Define the Method GetChildMappings() in Interface\TranslationUtilities.cs (If applicable)
-6. Define the Method CollectAdditionalExternalIds() in Interface\TranslationUtilities.cs (If applicable)
-7. Define the Method EstimateTotalAPICallsMade() in Interface\TranslationUtilities.cs (If applicable)
-8. Define the Method UpdateWebhookSubscriptionAsync() in Interface\TranslationUtilities.cs (If applicable)
+
+3. Define the Method HandlePrerequisite() in Interface\TranslationUtilities.cs (If applicable)  
+4. Define the Method HandlePostActions() in Interface\TranslationUtilities.cs (If applicable)  
+5. Define the Method GetChildMappings() in Interface\TranslationUtilities.cs (If applicable)  
+6. Define the Method CollectAdditionalExternalIds() in Interface\TranslationUtilities.cs (If applicable)  
+7. Define the Method EstimateTotalAPICallsMade() in Interface\TranslationUtilities.cs (If applicable)  
+8. Define the Method UpdateWebhookSubscriptionAsync() in Interface\TranslationUtilities.cs (If applicable)  
 
 ## Logging Activity with iPaaS.com
 
