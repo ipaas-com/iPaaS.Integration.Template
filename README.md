@@ -4,6 +4,22 @@
 Provides a template project to assist Integrators with development of new integrations for iPaaS.com.
 
 ## BEFORE YOU BEGIN
+### HAVING THE RIGHT EXPECTATIONS
+
+The feeling of success comes when we achieve within our expectations of ourselves.  Having unrealistic expectations will lead to feeling overwhelmed or frustrated.
+To that end, let's try to set some proper expectations for developing a new integration.
+
+If you are an experienced developer and are familiar with the iPaaS.com platform and all the concepts within, you can expect to build, upload and test a new integration with one or two flows supported in 4-8 hours.
+And in that case, more time will be spent building Development Tests, Documenting and Logging properly and prepraring the integration for certification than the development effort itself.
+As developers, we understand that frustration ^^^, but if we are honest with ourselves, we know its necessary and the right thing to do ;)
+
+If this is your first time developing an integration on iPaaS.com, prepare plenty of time without a time sensitive milestone.  We have seen full integrations built in under a week and others that take weeks to get a single flow working.
+The length of time to your first integration working depends mostly upon the ease of use and feature-set of the external application and how quickly you digest the iPaaS.com concepts into familiarity.   
+
+What we promise is if you take your time, write your code with pride, and don't take short cuts - the effort will be very rewarding.
+Best of luck.. and Skill!
+
+### PREREQUISITES
 
 Register an account on the iPaaS.com Staging environment.  https://stagingportal.ipaas.com
 Request permission to become an integrator.
