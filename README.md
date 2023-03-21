@@ -142,8 +142,8 @@ Please note that after Data models are built, they will be associated with speci
 Whenever an integration is subscribed to, information that is unique to the customer may be needed by the integration to perform certain tasks.  
 Integrators can define Setting properties in Settings.cs which will receive the subscribers saved inputs at Runtime. 
 
-1. Register any Preset fields with iPaaS Metadata using GetPresets() in Interface\Metadata.cs.  These fields will presented to the subscribers upon subscribing to the integration and save their unique inputs.
-2. Create and associate the local Setting properties with the Preset names so iPaaS can deliver the unique customer values into at runtime, which can be referenced by any runtime methods.
+1. Register any Preset fields with iPaaS Metadata using GetPresets() in Interface\Metadata.cs.  These fields will presented to the subscribers upon subscribing to the integration and save their unique inputs.  
+2. Create and associate the local Setting properties in Interface\Settings.cs with the Preset names so iPaaS can deliver the unique customer values into at runtime, which can be referenced by any runtime methods.  
 
 ### Custom Field Handling
 Build handling for custom fields since they can be implemented differently in each external system.
@@ -176,11 +176,11 @@ iPaaS.com provides an easy way to log technical activity from within your integr
 During runtime, iPaaS.com will provide your integration a Connection object that contains a helper class named Logger that contains this method:
     * Log_Technical(string severity, string location, string details)
 
-1. Severity will indicate under what conditions iPaaS.com will record the entry:
+1. Severity will indicate under what conditions iPaaS.com will record the entry:  
     * E = Error (Always record the entry)
+    * W = Warning (Always record the entry without Error)
     * D = Debug (Only record the entry when running in Debug mode)
-    * W = ??
-    * V = Verbose (Always record the entry)
+    * V = Verbose (Verbose logging is turned off in all environments, so this will never be seen)
 
 2. Location is a personalized text entry that will indicate to you and your subscribers where in the integration the log entry is originating from.  This is typically the Class and Method, but you can choose whatever is most manageable for you.
 
@@ -188,17 +188,14 @@ During runtime, iPaaS.com will provide your integration a Connection object that
 
 These are some examples of how to Log an entry:
 
-> **Example: ??**  
-_connection.Logger.Log_Technical("W", string.Format("{0} CallWrapper.{1}", Identity.AppName, "MethodName"), "Calculating Custom Fields: Step 1");  
+> **Example: Warning**  
+_connection.Logger.Log_Technical("W", string.Format("{0} CallWrapper.{1}", Identity.AppName, "MethodName"), "Calculating Custom Fields: Step 1");   
 
 > **Example: Debug**  
 _connection.Logger.Log_Technical("D", string.Format("{0} CallWrapper.{1}", Identity.AppName, "MethodName"), "Custom Fields Found: " & items.count());  
 
 > **Example: Error**  
 _connection.Logger.Log_Technical("E", string.Format("{0} CallWrapper.{1}", Identity.AppName, "MethodName"), resp.ErrorException.Message);  
-
-
-1. Describe Here
 
 ## Testing your Integration on iPaaS.com
 
@@ -207,8 +204,8 @@ When you are ready to test your integration with data in your staging environmen
 1. For each Data Flow that you intend to provide support for, you must create a static method in DevelopmentTests.cs to demonstrate each feature.
 Here are some guidelines on naming conventions and objectives your tests should meet in order to pass certification.  
 
-    * A
-    * B
+    * Name should be the IntegrationName_MappingCollectionType_Direction_EventType
+    * In this project, an example test was provided from the Philips MeetHue interface: MeetHue_Transaction_FromiPaaS_Update(Integration.Abstract.Connection connection)
 
 ## Uploading your Integration
 When you are ready to upload your file to your staging environment, you can use the [iPaaS.com Integration Development Utility](https://github.com/ipaas-com/iPaaS.Integration.DevelopmentUtility)
