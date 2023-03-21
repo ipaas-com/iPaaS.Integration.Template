@@ -104,14 +104,14 @@ Interface\Metadata.cs
 
 1. Register the new Integration and Namespace with iPaaS Metadata using LoadMetaData() in Interface\Metadata.cs.  Populate all property values.
 
-## Prepare the APICall helper class
+### Prepare the APICall helper class
 The methods in APICall.cs were built to assist with all the API Calls which will be performed by your integration with the external application.  
 Use this template to get started, but it should be modified to accommodate the API documentation provided by the external application provider.
 
 1. Apply Authorization in CreateRestRequest(...)
 2. Handle Errors in HandleResponse(...)
 
-## Prepare the CallWrapper class
+### Prepare the CallWrapper class
 The CallWrapper class will be populated by iPaaS at runtime with information specific to the transfer request to be used by the integration and will return processing information back to iPaaS about how the transfer performed.
 
 1. Modify EstablishConnection(...) to define how iPaaS will establish a connection at runtime.
@@ -120,7 +120,7 @@ The CallWrapper class will be populated by iPaaS at runtime with information spe
 ### MappingCollections
 Please refer to the information gathered in the Research and Planning section in order to complete the following steps.
 
-For each MappingCollection that will be supported, you will need to build a model consistent with the external API properties.
+For each MappingCollection that will be supported, you will need to build a data model consistent with the external API properties.
 Please note that after Data models are built, they will be associated with specific tasks later.  [See translation utilities for more](#translation-utilities).
 1. Add properties for each external field 
 2. Implement the correct Abstract Inheritence Model (See Template.cs)
@@ -138,9 +138,9 @@ Please note that after Data models are built, they will be associated with speci
 
 `Important! Not all properties in your Data Models will be mappable in either direction.  If you did not already do so, consider tagging properties like this in your Data Models with [iPaaSIgnore].  This will exclude the registration of these fields with iPaaS Metadata.  Subscribers will NOT be able to create mappings for these fields.`  
 
-### Settings.cs
+### Create Presets and Settings
 Whenever an integration is subscribed to, information that is unique to the customer may be needed by the integration to perform certain tasks.  
-Integrators can define Setting properties for iPaaS.com to collect from the subscriber saved inputs into fields known as Presets.  
+Integrators can define Setting properties in Settings.cs which will receive the subscribers saved inputs at Runtime. 
 
 1. Register any Preset fields with iPaaS Metadata using GetPresets() in Interface\Metadata.cs.  These fields will presented to the subscribers upon subscribing to the integration and save their unique inputs.
 2. Create and associate the local Setting properties with the Preset names so iPaaS can deliver the unique customer values into at runtime, which can be referenced by any runtime methods.
@@ -153,7 +153,7 @@ Build handling for custom fields since they can be implemented differently in ea
     * SetValueCustomField(...)
     * GetCustomFieldKVPs(...)
 
-## Translation Utilities
+### Translation Utilities
 Whenever a transfer runtime event occurs, the methods in TranslationUtilties.cs will be executed.  
 
 1. Some of the methods in this Template project have been abstracted into the Data Models, so that the method in TranslationUtilities will call a corresponding method in the Data Model directly such as GetPrimaryId(...), SetPrimaryId(...), ModelGetAsync(...), ModelCreateAsync(...), ModelUpdateAsync(...), and ModelDeleteAsync(...).  
