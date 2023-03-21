@@ -1,0 +1,97 @@
+﻿using Integration.Data.Interface;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Integration.DataModels
+{
+    // All Data Models should inherit from AbstractIntegrationData.
+
+    abstract public class AbstractIntegrationData : System.Attribute
+    {
+        // =====================================================
+        // The properties are used by iPaaS.com to track and
+        // assist subscribers with throttling across the
+        // integration ecosystem.
+
+        [iPaaSIgnore]
+        [JsonIgnore]
+        public long QuotaResponseRequestsLeft;
+
+        [iPaaSIgnore]
+        [JsonIgnore]
+        public long QuotaResponseRequestQuota;
+
+        [iPaaSIgnore]
+        [JsonIgnore]
+        public long QuotaResponseResetMS;
+
+        [iPaaSIgnore]
+        [JsonIgnore]
+        public long QuotaResponseWindowMS;
+
+        [iPaaSIgnore]
+        [JsonIgnore]
+        public int TotalAPICalls = 1;
+
+        // =====================================================
+        // Do not modify.  This is used by the system.attribute
+        // inheritence enabling [iPaaSIgnore]
+
+        [JsonIgnore]
+        public override object TypeId { get { return base.TypeId; } }
+
+        // =====================================================
+        // Override this method to retrieve the Primary Key
+        // of the external object when retreiving data
+        // from iPaaS.com
+
+        public abstract object GetPrimaryId();
+
+        // =====================================================
+        // Override this method to retrieve the Primary Key of
+        // the external object when sending data to iPaaS.com
+
+        public abstract void SetPrimaryId(string PrimaryId, bool ThrowErrorOnInvalid = false);
+
+        // =====================================================
+        // Override these methods to performe API calls for
+        // that Mapping Collection type
+
+        public abstract Task<object> Get(CallWrapper activeCallWrapper, object _id);
+
+        public abstract Task<object> Create(CallWrapper activeCallWrapper);
+
+        public abstract Task<object> Update(CallWrapper activeCallWrapper);
+
+        public abstract Task<object> Delete(CallWrapper activeCallWrapper, object _id);
+
+
+        // =====================================================
+        // Use this helper function to Error on Primary Key issues
+
+        public void HandleInvalidPrimaryId(string PrimaryId, bool ThrowErrorOnInvalid, string ClassName, string FieldName = "")
+        {
+            if (ThrowErrorOnInvalid)
+                throw new Exception("Invalid data passed to " + ClassName + ".SetPrimaryKey" + (string.IsNullOrEmpty(FieldName) ? "" : "." + FieldName) + ": " + PrimaryId);
+            else
+                return;
+        }
+
+        // =====================================================
+    }
+
+    // =====================================================
+    // DO NOT MODIFY
+    // The iPaaSIgnore attribute is used to exclude properties from iPaaS.com metadata.
+    // Any property tagged with this attribute will be excluded when executing MetaData.cs\GenerateTableInfo during upload.
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public class iPaaSIgnore : Attribute
+    {
+        //... Do Nothing
+    }
+}

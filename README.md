@@ -1,4 +1,4 @@
-[//https://daringfireball.net/projects/markdown/syntax]: # (Reference this page for Markdown syntax)
+﻿[//https://daringfireball.net/projects/markdown/syntax]: # (Reference this page for Markdown syntax)
 
 # IntegrationTemplate
 Provides a template project to assist Integrators with development of new integrations for iPaaS.com.
@@ -142,7 +142,7 @@ Please note that after Data models are built, they will be associated with speci
 Whenever an integration is subscribed to, information that is unique to the customer may be needed by the integration to perform certain tasks.  
 Integrators can define Setting properties in Settings.cs which will receive the subscribers saved inputs at Runtime. 
 
-1. Register any Preset fields with iPaaS Metadata using GetPresets() in Interface\Metadata.cs.  These fields will presented to the subscribers upon subscribing to the integration and save their unique inputs.  
+1. Register any Preset fields with iPaaS Metadata using GetPresets() in Interface\Metadata.cs.  These fields will be presented to the subscribers upon subscribing to the integration and save their unique inputs.  
 2. Create and associate the local Setting properties in Interface\Settings.cs with the Preset names so iPaaS can deliver the unique customer values into at runtime, which can be referenced by any runtime methods.  
 
 ### Custom Field Handling
