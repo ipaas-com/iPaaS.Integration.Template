@@ -1,5 +1,16 @@
+[//https://daringfireball.net/projects/markdown/syntax]: # (Reference this page for Markdown syntax)
+
 # IntegrationTemplate
 Provides a template project to assist Integrators with development of new integrations for iPaaS.com.
+
+## BEFORE YOU BEGIN
+
+Register an account on the iPaaS.com Staging environment.  https://stagingportal.ipaas.com
+Request permission to become an integrator.
+Once approved, you will be able to register new integrations in the Integrator Experience.
+
+`Important: In order to upload and test a new integration, you will need to reference the Integration Id assigned by iPaaS.com during registration.`
+
 
 ## RESEARCH AND PLANNING
 
@@ -14,7 +25,7 @@ If this is your first integration project, we recommend choosing a single Mappin
 
 Create .NET Core 3.1 Class Library project named {{your integration name}}.Data
 1. Register Nuget Dependencies
-    * ipaas.integration.sdk (latest stable).  The documentation for the abstract methods contained within can be found in this [Github project](https://github.com/ipaas-com/iPaaS.Integration.SDK).
+    * ipaas.integration.sdk (latest stable).  The documentation for the abstract methods contained within can be found [iPaaS.com Integration SDK](https://github.com/ipaas-com/iPaaS.Integration.SDK]).
     * NewtonsoftJSON (latest stable)
     * RestSharp (latest stable)
 
@@ -144,25 +155,62 @@ The remaining steps are optional if they apply to the external system.  (Read mo
 8. Define the Method UpdateWebhookSubscriptionAsync() in Interface\TranslationUtilities.cs (If applicable)  
 
 ## Logging Activity with iPaaS.com
+iPaaS.com provides an easy way to log technical activity from within your integration at runtime for diagnosing issues, both during testing and post production.
+
+During runtime, iPaaS.com will provide your integration a Connection object that contains a helper class named Logger that contains this method:
+    * Log_Technical(string severity, string location, string details)
+
+1. Severity will indicate under what conditions iPaaS.com will record the entry:
+    * E = Error (Always record the entry)
+    * D = Debug (Only record the entry when running in Debug mode)
+    * W = ??
+    * V = Verbose (Always record the entry)
+
+2. Location is a personalized text entry that will indicate to you and your subscribers where in the integration the log entry is originating from.  This is typically the Class and Method, but you can choose whatever is most manageable for you.
+
+3. Details is a personalized text entry that describes what is occuring.
+
+These are some examples of how to Log an entry:
+
+> **Example: ??**  
+_connection.Logger.Log_Technical("W", string.Format("{0} CallWrapper.{1}", Identity.AppName, "MethodName"), "Calculating Custom Fields: Step 1");  
+
+> **Example: Debug**  
+_connection.Logger.Log_Technical("D", string.Format("{0} CallWrapper.{1}", Identity.AppName, "MethodName"), "Custom Fields Found: " & items.count());  
+
+> **Example: Error**  
+_connection.Logger.Log_Technical("E", string.Format("{0} CallWrapper.{1}", Identity.AppName, "MethodName"), resp.ErrorException.Message);  
+
 
 1. Describe Here
 
 ## Testing your Integration on iPaaS.com
-When you are ready to test your integration with data in your staging environment account, you can use the console tool.
 
-1. Describe Here
+When you are ready to test your integration with data in your staging environment account, you can use the [iPaaS.com Integration Development Utility](https://github.com/ipaas-com/iPaaS.Integration.DevelopmentUtility)
+
+1. For each Data Flow that you intend to provide support for, you must create a static method in DevelopmentTests.cs to demonstrate each feature.
+Here are some guidelines on naming conventions and objectives your tests should meet in order to pass certification.  
+
+    * A
+    * B
 
 ## Uploading your Integration
-When you are ready to upload your file to your staging environment, you can use the console tool.
+When you are ready to upload your file to your staging environment, you can use the [iPaaS.com Integration Development Utility](https://github.com/ipaas-com/iPaaS.Integration.DevelopmentUtility)
 
 ## Building Mappings
 
-1. Build mappings in your subscriber account
-2. Build Template mappings in your integration 
+After you have successfully upload your new Integration:
+
+1. Return to your account portal in the subscriber experience  
+2. Subscribe to your new integration from the marketplace  
+3. Configure your subscription by entering credentials from your external system sandbox  
+4. Build mappings in your subscriber account  
 
 ## Certifying your Integration
 
 1. Describe Here
+
+Once all testing is completed, we will generate Template mappings in your integration from the subscriber account that we tested on.
 
 
 
