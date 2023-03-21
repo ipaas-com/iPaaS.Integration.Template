@@ -21,9 +21,9 @@ Best of luck.. and Skill!
 
 ### Prerequisites
 
-Register an account on the iPaaS.com Staging environment.  https://stagingportal.ipaas.com
-Request permission to become an integrator.
-Once approved, you will be able to register new integrations in the Integrator Experience.
+Register an account on the iPaaS.com Staging environment.  https://stagingportal.ipaas.com  
+Request permission to become an integrator.  
+Once approved, you will be able to register new integrations in the Integrator Experience.  
 
 `Important: In order to upload and test a new integration, you will need to reference the Integration Id assigned by iPaaS.com during registration.`
 
