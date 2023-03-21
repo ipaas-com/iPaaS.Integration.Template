@@ -206,14 +206,16 @@ After you have successfully upload your new Integration:
 3. Configure your subscription by entering credentials from your external system sandbox  
 4. Build mappings in your subscriber account  
 
+## Building a Webhook Receiver
+
+If the external application you are certifying an integration for provides webhooks, chances are that the webhook format is unique to that system.
+iPaaS.com provides a Dynamic Hook receiver, which you can configure to receive webhooks in the format provided by the external application.
+
+1. Return to your account portal in the integrator experience to configure the Webhook Receiver.
+
 ## Certifying your Integration
 
 1. Describe Here
 
 Once all testing is completed, we will generate Template mappings in your integration from the subscriber account that we tested on.
-
-
-
-
-
 
