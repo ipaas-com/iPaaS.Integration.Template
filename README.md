@@ -4,7 +4,7 @@
 Provides a template project to assist Integrators with development of new integrations for iPaaS.com.
 
 ## BEFORE YOU BEGIN
-### HAVING THE RIGHT EXPECTATIONS
+### Having The Right Expectations
 
 The feeling of success comes when we achieve within our expectations of ourselves.  Having unrealistic expectations will lead to feeling overwhelmed or frustrated.
 To that end, let's try to set some proper expectations for developing a new integration.
@@ -19,7 +19,7 @@ The length of time to your first integration working depends mostly upon the eas
 What we promise is if you take your time, write your code with pride, and don't take short cuts - the effort will be very rewarding.
 Best of luck.. and Skill!
 
-### PREREQUISITES
+### Prerequisites
 
 Register an account on the iPaaS.com Staging environment.  https://stagingportal.ipaas.com
 Request permission to become an integrator.
