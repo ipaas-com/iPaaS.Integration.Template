@@ -7,7 +7,19 @@ namespace Integration.Data.Interface
 {
     public class DevelopmentTests
     {
-        public static async Task DevTest1(Integration.Abstract.Connection connection)
+        // Example development test running Connection Validation
+        public static async Task Integration_Wrapper_ValidateConnection(Integration.Abstract.Connection connection)
+        {
+            var conn = (Connection)connection;
+            var wrapper = conn.CallWrapper;
+            var response = await wrapper.ValidateConnection();
+
+            // Test with successful and invalid credentials.
+            // Are you handling Error responses correctly?
+        }
+
+        // Example development test running from your DataModel events
+        public static async Task Integration_Template_FromiPaaS_Create(Integration.Abstract.Connection connection)
         {
             var conn = (Connection)connection;
             var wrapper = conn.CallWrapper;
@@ -17,9 +29,13 @@ namespace Integration.Data.Interface
             // set other properties for DevTest1
             // set your debug breakpoints in here and step through after executing your DevelopmentTest
 
-            await DevTest1.Create(wrapper);
+            var response = await DevTest1.Create(wrapper);
+            
+            // Check your response status.  Did everything go OK?
         }
 
+        /*
+         * 
         // Example Development Test Structure for Certification
         // Name should be the IntegrationName_MappingCollectionType_Direction_EventType
         public static async Task MeetHue_Transaction_FromiPaaS_Update(Integration.Abstract.Connection connection)
@@ -119,6 +135,7 @@ namespace Integration.Data.Interface
             //}
 
         }
+        */
 
     }
 
