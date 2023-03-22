@@ -1,4 +1,4 @@
-﻿[//https://daringfireball.net/projects/markdown/syntax]: # (Reference this page for Markdown syntax)
+[//https://daringfireball.net/projects/markdown/syntax]: # (Reference this page for Markdown syntax)
 
 # IntegrationTemplate
 Provides a template project to assist Integrators with development of new integrations for iPaaS.com.
@@ -100,8 +100,6 @@ In this section, we will build or modify all the files needed to certify an inte
 
 ### Getting Started
 
-Interface\Metadata.cs
-
 1. Register the new Integration and Namespace with iPaaS Metadata using LoadMetaData() in Interface\Metadata.cs.  Populate all property values.
 
 ### Prepare the APICall helper class
@@ -163,12 +161,13 @@ Since you should have already created your Data Models by now, you will be famil
 
 The remaining steps are optional if they apply to the external system.  (Read more about each method within CallWrapper.cs):
 
-3. Define the Method HandlePrerequisite() in Interface\TranslationUtilities.cs (If applicable)  
-4. Define the Method HandlePostActions() in Interface\TranslationUtilities.cs (If applicable)  
-5. Define the Method GetChildMappings() in Interface\TranslationUtilities.cs (If applicable)  
-6. Define the Method CollectAdditionalExternalIds() in Interface\TranslationUtilities.cs (If applicable)  
-7. Define the Method EstimateTotalAPICallsMade() in Interface\TranslationUtilities.cs (If applicable)  
-8. Define the Method UpdateWebhookSubscriptionAsync() in Interface\TranslationUtilities.cs (If applicable)  
+3. Define the Method HandlePrerequisite(...) in Interface\TranslationUtilities.cs (If applicable)  
+4. Define the Method HandlePostActions(...) in Interface\TranslationUtilities.cs (If applicable)  
+5. Define the Method GetChildMappings(...) in Interface\TranslationUtilities.cs (If applicable)  
+6. Define the Method CollectAdditionalExternalIds(...) in Interface\TranslationUtilities.cs (If applicable)  
+7. Define the Method EstimateTotalAPICallsMade(...) in Interface\TranslationUtilities.cs (If applicable)  
+8. Define the Method UpdateWebhookSubscriptionAsync(...) in Interface\TranslationUtilities.cs (If applicable) 
+9. Define the Method InitializeData(...) in Interface\TranslationUtilities.cs (If applicable) 
 
 ## Logging Activity with iPaaS.com
 iPaaS.com provides an easy way to log technical activity from within your integration at runtime for diagnosing issues, both during testing and post production.
@@ -232,3 +231,128 @@ iPaaS.com provides a Dynamic Hook receiver, which you can configure to receive w
 
 Once all testing is completed, we will generate Template mappings in your integration from the subscriber account that we tested on.
 
+
+## Sample New Integration Project Plan
+ > ====================================================================   
+PreRequisites (??? Days)
+
+  Establish an external system Sandbox
+
+====================================================================  
+Phase 1 (1-2 Days)
+
+	Initial Discovery Steps:
+		- Identify Flows
+		- Review APIs
+		- Verify Rough Field Mappings
+		- Complete Discovery Guide
+		- Build Project Plan
+		- Build Testing Form
+
+	Getting Started Steps:
+		- Register Integration in iPaaS.com in the Integrator Experience
+		- Setup a new Integration project
+		- Check in to repository
+	
+====================================================================  
+Phase 2 (Less than 1 Day)
+
+	Build Steps:
+		- Populate LoadMetaData(...) in Interface\Metadata.cs
+		- Populate GetPresets(...) in Interface\Metadata.cs
+		- Populate Settings.cs that will be used for Establishing a Connection
+		- Populate EstablishConnection(...) in Interface\CallWrapper.cs
+		- Apply end-point authorization formatting to CreateRestRequest(...) in Interface\APICall.cs
+		- Populate ValidateConnection(...) in Interface\CallWrapper.cs
+		- Build a method to test ValidateConnection in Interface\DevelopmentTest.cs
+		- Perform your first upload using the Integration Development Utility
+		- Using the iPaaS.com Integrator Experience on Staging, verify that the presets you defined were saved in the Integration.
+		
+	Configure Steps:
+		- Navigate to iPaaS.com Subscriber view > Subscriptions
+		- Add a new subscription for your new integration.
+		- Populate the Settings fields you defined as Presets earlier.
+		
+	Test Steps:
+
+		- Using the Integration Development Utility, execute the Development Test you built for Validating the Connection.
+		
+		* Please note that it may be necessary to modify Interface\APICall.cs, depending upon the external system.
+	
+	When successful, Move to Phase 3
+	
+====================================================================  
+Phase 3 (4-6 Hours p/flow)
+
+	Build Steps:
+
+		- Populate LoadMetaData(...) in Metadata.cs
+		- Build a DataModel for each data flow to be supported
+			- Add properties to match each field from the corresponding external system object  
+			- Populate GetPrimaryId(...)
+			- Populate SetPrimaryId(...)
+			- Populate Get(...)
+			- Populate Create(...)
+			- Populate Update(...)
+			- Populate Delete(...)
+			
+		- Add an entry for each DataModel in GetDestinationObject(...) in Interface\TranslationUtilities.cs
+		- If any of the DataModels were children of another, Add an entry for each child DataModel in GetChildMappings(...) in Interface\TranslationUtilities.cs
+		- Build a method to test each DataModel Event in Inteface\DevelopmentTests.cs
+		
+	Test Steps:
+
+		- Using the Integration Development Utility, execute each Development Test you built for each DataModel event.
+		
+	When successful, Move to Phase 4
+
+====================================================================  
+Phase 4 (1-2 Hours p/flow)
+
+	Configure Steps:
+		- Perform another upload using the Integration Development Utility
+		- Using the iPaaS.com Integrator Experience on Staging, verify that the tables and fields exist for the datamodels you defined in the integration.
+		
+		- Navigate to iPaaS.com Subscriber view > Subscriptions
+		- Create new Mappings and individual field mappings for each DataFlow.  There should be one for each MappingCollection, Direction and Event Type
+		- For Data Flows where data is moving From iPaaS, create a test record in the iPaaS Data Management module that corresponds to the MappingCollection you will be testing.
+		- For Data Flows where data is moving To iPaaS, create a test record in the external system that corresponds to the end-point configured in your Data Models.
+		
+	Test Steps:
+		- Using the Integration Development Utility, execute a Hook request for each MappingCollection and Direction from your data flows.
+		- Verify the data arrived successfully in the Destination System (Either the External System when the direction is From iPaaS, or in iPaaS when the direction is To iPaaS).
+
+	When successful, Move to Phase 5
+
+====================================================================  
+Phase 5 (4 Hours)
+
+	Build Integration
+		- Populate GetScopes(...) in Interface\Metadata.cs
+		- For each Scope which will recieve a webhook from the external system, build handling for UpdateWebhookSubscriptionAsync(...) in Interface\TranslationUtilities.cs to enable the external system Webhook by API.
+		- Using the iPaaS.com Integrator Experience on Staging, configure the Webhook Receiver to the external system specifications.
+		- Using the iPaaS.com Integrator Experience on Staging: 
+			- Verify that the Scopes exist which you defined in the integration.
+		
+	Test Integration
+		- Navigate to iPaaS.com Subscriber view > Subscriptions
+		- Edit the External Webhooks for the subscription you are testing
+		- Enable the corresponding webhook for each Flow that will be moving "To iPaaS"
+		- Verify that the external system webhooks were configured to send.  If the external system does not have a way to verify this by API or within their UI, you can create a new record within the external system and verify it arrives in the corresponding iPaaS Data Management Module.
+		
+	When successful, Move to Phase 6
+	
+====================================================================  
+Optional Phase 6 (?? Hours)
+
+	Optional Additions
+		- Define the Method HandlePrerequisite() in Interface\TranslationUtilities.cs (If applicable)
+		- Define the Method HandlePostActions() in Interface\TranslationUtilities.cs (If applicable)
+		- Define the Method CollectAdditionalExternalIds() in Interface\TranslationUtilities.cs (If applicable)
+		- Define the Method EstimateTotalAPICallsMade() in Interface\TranslationUtilities.cs (If applicable)
+		- Define the Methods in Interface\CustomFieldHandler.cs (If applicable)
+		- Build Custom Functions in Interface\ConversionFunction.cs (If applicable)
+
+	When successful, Schedule for certification
+	
+====================================================================  
