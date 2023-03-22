@@ -27,6 +27,7 @@ Once approved, you will be able to register new integrations in the Integrator E
 
 `Important: In order to upload and test a new integration, you will need to reference the Integration Id assigned by iPaaS.com during registration.`
 
+Review the Sample [New Integration Project Plan](#sample-new-integration-project-plan)
 
 ## RESEARCH AND PLANNING
 
@@ -41,7 +42,7 @@ If this is your first integration project, we recommend choosing a single Mappin
 
 Create .NET Core 3.1 Class Library project named {{your integration name}}.Data
 1. Register Nuget Dependencies
-    * ipaas.integration.sdk (latest stable).  The documentation for the abstract methods contained within can be found [iPaaS.com Integration SDK](https://github.com/ipaas-com/iPaaS.Integration.SDK]).
+    * ipaas.integration.sdk (latest stable).  The documentation for the abstract methods contained within can be found [iPaaS.com Integration SDK](https://github.com/ipaas-com/iPaaS.Integration.SDK).
     * NewtonsoftJSON (latest stable)
     * RestSharp (latest stable)
 
@@ -233,10 +234,12 @@ Once all testing is completed, we will generate Template mappings in your integr
 
 
 ## Sample New Integration Project Plan
- > ====================================================================   
+====================================================================  
 PreRequisites (??? Days)
 
-  Establish an external system Sandbox
+	Establish an external system Sandbox
+		- Verify login credentials for the UI
+		- Verify login credentials for the API
 
 ====================================================================  
 Phase 1 (1-2 Days)
@@ -355,4 +358,3 @@ Optional Phase 6 (?? Hours)
 
 	When successful, Schedule for certification
 	
-====================================================================  
