@@ -87,7 +87,7 @@ namespace Integration.Data.Interface
                 return "Success";
             }
 
-            return "Unknown Issue";
+            return "Unknown Issue Executing ValidateConnection";
         }
     }
 }
