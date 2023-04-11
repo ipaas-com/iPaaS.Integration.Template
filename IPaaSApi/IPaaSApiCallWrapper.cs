@@ -22,10 +22,12 @@ namespace Integration.Data.IPaaSApi
         {
             Customers,
             Giftcards,
-            Integrations,
+            Integrators,
             Products,
             SSO,
-            Transactions
+            Subscriptions,
+            Transactions,
+            Employees
         }
 
         private Connection _connection;
@@ -35,39 +37,6 @@ namespace Integration.Data.IPaaSApi
         {
             _connection = (Connection)connection;
             _settings = (Settings)settings;
-        }
-
-        private RestClient createClient(EndpointURL endpoint)
-        {
-            string url;
-            switch (endpoint)
-            {
-                case EndpointURL.Customers:
-                    url = _settings.IPaaSApi_Customers;
-                    break;
-                case EndpointURL.Giftcards:
-                    url = _settings.IPaaSApi_GiftCards;
-                    break;
-                case EndpointURL.Integrations:
-                    url = _settings.IPaaSApi_Subscriptions;
-                    break;
-                case EndpointURL.Products:
-                    url = _settings.IPaaSApi_Products;
-                    break;
-                case EndpointURL.SSO:
-                    url = _settings.IPaaSApi_SSO;
-                    break;
-                case EndpointURL.Transactions:
-                    url = _settings.IPaaSApi_Transactions;
-                    break;
-                default:
-                    throw new Exception("Unhandled endpoint type: " + endpoint.ToString());
-            }
-
-            var restClient = new RestClient(url);
-            restClient.AddDefaultHeader("Content-Type", "application/json");
-            restClient.AddDefaultHeader("Content_Type", "application/json");
-            return restClient;
         }
 
         private RestClient CreateClient(EndpointURL endpoint)
@@ -81,14 +50,17 @@ namespace Integration.Data.IPaaSApi
                 case EndpointURL.Giftcards:
                     url = _settings.IPaaSApi_GiftCards;
                     break;
-                case EndpointURL.Integrations:
-                    url = _settings.IPaaSApi_Subscriptions;
+                case EndpointURL.Integrators:
+                    url = _settings.IPaaSApi_Integrators;
                     break;
                 case EndpointURL.Products:
                     url = _settings.IPaaSApi_Products;
                     break;
                 case EndpointURL.SSO:
                     url = _settings.IPaaSApi_SSO;
+                    break;
+                case EndpointURL.Subscriptions:
+                    url = _settings.IPaaSApi_Subscriptions;
                     break;
                 case EndpointURL.Transactions:
                     url = _settings.IPaaSApi_Transactions;
@@ -100,6 +72,7 @@ namespace Integration.Data.IPaaSApi
             var restClient = new RestClient(url);
             restClient.AddDefaultHeader("Content-Type", "application/json");
             restClient.AddDefaultHeader("Content_Type", "application/json");
+            restClient.UseSerializer(() => new Utilities.RestSharpNewtonsoftSerializer());
             return restClient;
         }
 
@@ -115,10 +88,58 @@ namespace Integration.Data.IPaaSApi
             return req;
         }
 
+        //Check if the iPaaS response indicates the call failed or not. If it failed, we throw an error. 
+        private void HandleResponse(RestSharp.RestResponse resp, string action, bool notFoundIsError = true)
+        {
+            if ((resp.ErrorException != null && resp.StatusCode != System.Net.HttpStatusCode.NotFound) || (resp.StatusCode == System.Net.HttpStatusCode.NotFound && notFoundIsError))
+            {
+                string errMsg = ProcessFullErrorMessage(resp);
+                _connection.Logger.Log_ActivityTracker("Recieved ErrorException from externalSystem's iPaaSCallWrapper." + action + ". See Tech log for more details", "Failed API Call to iPaaS (via external dll)", "Error", 0);
+                _connection.Logger.Log_TechnicalException($"ExternalSystem.IPaaSCallWrapper.{action}:ErrorException", resp.ErrorException);
+                _connection.Logger.Log_Technical("E", $"ExternalSystem.IPaaSCallWrapper.{action}:ErrorMessage", errMsg);
+                throw new Exception(errMsg);
+            }
+            else if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                //If the status code is not found, we don't want to throw an exception, but we do want to log it.
+                string errMsg = ProcessFullErrorMessage(resp).Replace("Error:", "");
+                _connection.Logger.Log_ActivityTracker("Recieved NotFound from externalSystem's iPaaSCallWrapper." + action + ". This is not necessarliy an error", "API Call to iPaaS (via external dll) returned NotFound", "Info", 0);
+                _connection.Logger.Log_Technical("I", $"ExternalSystem.IPaaSCallWrapper.{action}:NotFound", errMsg + ". This is not necessarily an error");
+            }
+            else
+            {
+                //If the status code is not found, we don't want to throw an exception, but we do want to log it.
+                _connection.Logger.Log_ActivityTracker("Recieved Ok from externalSystem's iPaaSCallWrapper." + action + "", "API Call to iPaaS (via external dll) was succesful", "Verbose", 0);
+                _connection.Logger.Log_Technical("V", $"ExternalSystem.IPaaSCallWrapper.{action}:Success", "Successful call");
+            }
+        }
+
+        /// <summary>
+        /// Convert the RestResponse into a fully parsed, human readable error message.
+        /// </summary>
+        /// <param name="resp"></param>
+        /// <returns></returns>
+        private string ProcessFullErrorMessage(RestSharp.RestResponse resp)
+        {
+            string errMsg = "Error:";
+            if (!string.IsNullOrEmpty(resp.ErrorMessage))
+                errMsg += " " + resp.ErrorMessage;
+
+            if (!string.IsNullOrEmpty(resp.Content))
+                errMsg += " " + resp.Content;
+
+            // This is where Coy likes to hide his errors
+            if (!string.IsNullOrEmpty(resp.StatusDescription))
+                errMsg += " " + resp.StatusDescription;
+
+            errMsg += " (Http Code: " + resp.StatusCode.ToString() + ")";
+            return errMsg;
+        }
+
         public async Task<string> LookupIPaaSId_GETAsync(EndpointURL endpoint, string Id, int MappingCollectionType, long SystemId)
         {
 
-            var client = createClient(endpoint);
+            var client = CreateClient(endpoint);
             string url = "v2/External/LookupSpecial";
 
             var tablename = ConvertMappingCollectionTypeToTableName(MappingCollectionType);
@@ -130,7 +151,24 @@ namespace Integration.Data.IPaaSApi
             request.AddParameter("application/json", bodyJSON, ParameterType.RequestBody);
 
             var resp = await client.ExecuteAsync(request);
+            //Check if the response is an error. NotFound will be returned if the data is not linked, so we need to set notFoundIsError = false
+            HandleResponse(resp, "LookupIPaaSId_GETAsync", notFoundIsError: false);
+
+
             var output = resp.Content;
+
+            //Remove quotes, if there are any
+            if (output.StartsWith("\"") && output.EndsWith("\""))
+            {
+                output = output.Substring(1, output.Length - 2);
+
+                //The output has come to us formatted with escape chars as literals. (e.g. 30" Waist would show up as "30\" Waist")
+                output = System.Text.RegularExpressions.Regex.Unescape(output);
+            }
+
+            //Deleted external IDs need to be handled here
+            if (output.StartsWith("DELETED"))
+                return null;
 
             if (string.IsNullOrEmpty(output) || resp.StatusCode != System.Net.HttpStatusCode.OK)
                 return null;
@@ -151,6 +189,9 @@ namespace Integration.Data.IPaaSApi
             request.AddParameter("tablename", tablename, ParameterType.UrlSegment);
 
             var resp = await client.ExecuteAsync(request);
+            //Check if the response is an error. NotFound will be returned if the data is not linked, so we need to set notFoundIsError = false
+            HandleResponse(resp, "MappingExternalId_GETAsync", notFoundIsError: false);
+
             var output = resp.Content;
 
             //if there is no matching id, resp will have a status code of NotFound
@@ -189,6 +230,8 @@ namespace Integration.Data.IPaaSApi
             var client = CreateClient(endpoint);
             var request = createRequest(client, URL);
             var resp = await client.ExecuteAsync(request);
+            //Check if the response is an error.
+            HandleResponse(resp, "MappingExternalId_POST");
 
             var response = JsonConvert.DeserializeObject<ExternalIdRequest>(resp.Content);
             return response;
