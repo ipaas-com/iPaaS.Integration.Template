@@ -4,6 +4,21 @@
 Provides a template project to assist Integrators with development of new integrations for iPaaS.com.
 
 ## BEFORE YOU BEGIN
+
+### Overview
+
+iPaaS.com is a queue-based Integration Platform as a Service designed to increase accountability and transparency of data between APIs.  
+To achieve this, iPaaS.com divides the traditional Systems Integrator role into two primary roles and builds in accountability structure around each role in order to enable delegation of responsibility thru partnership.  
+One role contains the developer functions who have domain expertise for an external Technology API (We call this team Integrators) and Service functions who have general knowledge about operational objectives across many technologies (We call this team Managed Integration Service Providers or MiSPs).  
+
+The intention of the MiSP program is to empower “No-Code/Low-Code” operators trained in iPaaS.com a standardized way to facilitate ongoing and bespoke requirements across many technologies without having to establish a relationship between Integrators and MiSPs directly and without having to become domain experts in a particular technology.  
+Subscribers on iPaaS.com can engage companies they are familiar with and have a trusted relationship to aid them with ongoing management of their integration ecosystem in a framework which they are already accustomed to engaging.
+
+The intention of the Integrator SDK aims to disconnect the ongoing maintenance and management responsibilities of the Integrators from the customer.  
+The SDK guides integrators on building an integration to support many different operational requirements while not making “hard coding” decisions.   
+The Integrator will aim to build tooling to aid both Subscribers and MiSPs including connectors, supported feature documentation, template mappings and real-time activity logging for routine maintenance.  
+The final version is certified in a fully reusable way.
+
 ### Having The Right Expectations
 
 The feeling of success comes when we achieve within our expectations of ourselves.  Having unrealistic expectations will lead to feeling overwhelmed or frustrated.
@@ -25,9 +40,58 @@ Register an account on the iPaaS.com Staging environment.  https://stagingportal
 Request permission to become an integrator.  
 Once approved, you will be able to register new integrations in the Integrator Experience.  
 
-`Important: In order to upload and test a new integration, you will need to reference the Integration Id assigned by iPaaS.com during registration.`
+`Important: In order to upload and test a new integration, you will need to reference the Integration Id assigned by iPaaS.com during registration and login with the credientials used to register the integration.`
 
 Review the Sample [New Integration Project Plan](#sample-new-integration-project-plan)
+
+### Learn more about iPaaS.com
+<details>
+  <summary>Data Orchestration and Flow</summary>
+  
+  #### 
+  
+  iPaaS.com is a queue-based hub-and-spoke rules based integration platform that performs translations in near real time.  It is NOT architected as an API Proxy that brokers between one API and another.
+  When data is intended to transfer inbound (To iPaaS), the external system will notify iPaaS.com via a webhook that data was created/changed/deleted.  
+  The webhook contains the information necessary for iPaaS.com to identify which subscriber the data is being processed for, the type of data (Product, Customer, Etc.) and the unique identifier for the data record.
+
+  Webhooks are received by iPaaS.com and queued for processing.  iPaaS.com enables subscribers to override standard rate-limits and other settings that could influence order of operations.  This data is evaluating when processing the queue.  
+  Once an item is selected to be processed from the queue, it is assigned a Tracking Id as well as other meta-data that will facilitate the accountable transfer of data between systems.
+
+  iPaaS.com normalizes data into standardized Cloud Data Modules.  External system data Inbound (To iPaaS) will be transformed from the raw JSON returned by the Integration using subscriber defined business rules called Mapping Collections which can be modified by the subscriber at will through the UI.
+
+  When data is modified in iPaaS.com, either by originating through a certified Integration or via the iPaaS.com API, iPaaS.com will initiate orchestration of all outbound data (From iPaaS) to the waiting system.  
+  Subscribers can enable/disable which Data should move between systems.
+
+</details>
+  
+<details>
+  <summary>Cloud Data Modules and MappingCollections</summary>
+  
+  #### 
+  
+  Cloud Data Modules are a collection of data models typically representing an Industry focus.  
+  For example, Retail will use a collection of data models surrounding Products, Inventory, Customers, Transactions, Gift Cards, and more.  
+  Healthcare will use a collection of data models surrounding Hospital Systems, Patients, Physicians, Procedures, Referrals, and more.
+
+  These modules are how subscribers will access data in transit and can be dynamically altered by the subscriber to include custom fields from within the UI. 
+  
+  All fields, including custom fields, can be mapped to as a destination value for any data being transferred To iPaaS.
+  Cloud Data Modules cannot be created by Subscribers or Integrators.
+
+  Each Cloud Data Module has a corresponding MappingCollection name which will be related to by the Integration.
+
+</details>
+  
+<details>
+  <summary>iPaaS.com Processing Engine Order of Events</summary>
+  
+  #### 
+  
+  ![Integration Process Flow (To iPaaS)](https://cms.ipaas.com/sites/default/files/2023-04/iPaaSExternalDLLProcessFlow-ToiPaaS_0.png "Integration Process Flow (To iPaaS)")
+  
+  ![Integration Process Flow (From iPaaS)](https://cms.ipaas.com/sites/default/files/2023-04/iPaaSExternalDLLProcessFlow-FromiPaaS_0.png "Integration Process Flow (From iPaaS)")
+
+</details>
 
 ## RESEARCH AND PLANNING
 
@@ -42,7 +106,7 @@ If this is your first integration project, we recommend choosing a single Mappin
 
 Create .NET Core 3.1 Class Library project named {{your integration name}}.Data
 1. Register Nuget Dependencies
-    * ipaas.integration.sdk (latest stable).  The documentation for the abstract methods contained within can be found [iPaaS.com Integration SDK](https://github.com/ipaas-com/iPaaS.Integration.SDK).
+    * ipaas.integration.sdk (latest stable).  The documentation for the abstract methods contained within can be found [iPaaS.com Integration SDK](https://github.com/ipaas-com/iPaaS.Integration.SDK]).
     * NewtonsoftJSON (latest stable)
     * RestSharp (latest stable)
 
@@ -358,3 +422,4 @@ Optional Phase 6 (?? Hours)
 
 	When successful, Schedule for certification
 	
+====================================================================  
