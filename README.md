@@ -8,16 +8,11 @@ Provides a template project to assist Integrators with development of new integr
 ### Overview
 
 iPaaS.com is a queue-based Integration Platform as a Service designed to increase accountability and transparency of data between APIs.  
-To achieve this, iPaaS.com divides the traditional Systems Integrator role into two primary roles and builds in accountability structure around each role in order to enable delegation of responsibility thru partnership.  
-One role contains the developer functions who have domain expertise for an external Technology API (We call this team Integrators) and Service functions who have general knowledge about operational objectives across many technologies (We call this team Managed Integration Service Providers or MiSPs).  
+To achieve this, iPaaS.com divides the traditional Systems Integrator role into two primary roles and builds in accountability structure around each role in order to enable delegation of responsibility thru partnership.  One role contains the developer functions who have domain expertise for an external Technology API (We call this team Integrators) and Service functions who have general knowledge about operational objectives across many technologies (We call this team Managed Integration Service Providers or MiSPs).  
 
-The intention of the MiSP program is to empower “No-Code/Low-Code” operators trained in iPaaS.com a standardized way to facilitate ongoing and bespoke requirements across many technologies without having to establish a relationship between Integrators and MiSPs directly and without having to become domain experts in a particular technology.  
-Subscribers on iPaaS.com can engage companies they are familiar with and have a trusted relationship to aid them with ongoing management of their integration ecosystem in a framework which they are already accustomed to engaging.
+The intention of the MiSP program is to empower “No-Code/Low-Code” operators trained in iPaaS.com a standardized way to facilitate ongoing and bespoke requirements across many technologies without having to establish a relationship between Integrators and MiSPs directly and without having to become domain experts in a particular technology.  Subscribers on iPaaS.com can engage companies they are familiar with and have a trusted relationship to aid them with ongoing management of their integration ecosystem in a framework which they are already accustomed to engaging.
 
-The intention of the Integrator SDK aims to disconnect the ongoing maintenance and management responsibilities of the Integrators from the customer.  
-The SDK guides integrators on building an integration to support many different operational requirements while not making “hard coding” decisions.   
-The Integrator will aim to build tooling to aid both Subscribers and MiSPs including connectors, supported feature documentation, template mappings and real-time activity logging for routine maintenance.  
-The final version is certified in a fully reusable way.
+The intention of the Integrator SDK aims to disconnect the ongoing maintenance and management responsibilities of the Integrators from the customer.  The SDK guides integrators on building an integration to support many different operational requirements while not making “hard coding” decisions.   The Integrator will aim to build tooling to aid both Subscribers and MiSPs including connectors, supported feature documentation, template mappings and real-time activity logging for routine maintenance.  The final version is certified in a fully reusable way.
 
 ### Having The Right Expectations
 
@@ -45,6 +40,9 @@ Once approved, you will be able to register new integrations in the Integrator E
 Review the Sample [New Integration Project Plan](#sample-new-integration-project-plan)
 
 ### Learn more about iPaaS.com
+
+The following information about the platform may be helpful as a reference when you are building your integration.
+
 <details>
   <summary>Data Orchestration and Flow</summary>
   
