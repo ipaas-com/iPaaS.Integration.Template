@@ -78,8 +78,9 @@ namespace Integration.Data.IPaaSApi
 
         private RestRequest createRequest(RestClient client, string url)
         {
+            //If we have a tracking guid add it. We need to check if the url already has urlparams. If it does, we add an & rather than a ?
             if (_settings.TrackingGuid != Guid.Empty)
-                url += "?trackingGuid=" + _settings.TrackingGuid;
+                url += (url.Contains("?") ? "&" : "?") + "trackingGuid=" + _settings.TrackingGuid;
 
             RestSharp.RestRequest req = new RestRequest(url, Method.Get);
             req.RequestFormat = DataFormat.Json;
@@ -104,7 +105,7 @@ namespace Integration.Data.IPaaSApi
                 //If the status code is not found, we don't want to throw an exception, but we do want to log it.
                 string errMsg = ProcessFullErrorMessage(resp).Replace("Error:", "");
                 _connection.Logger.Log_ActivityTracker("Recieved NotFound from externalSystem's iPaaSCallWrapper." + action + ". This is not necessarliy an error", "API Call to iPaaS (via external dll) returned NotFound", "Info", 0);
-                _connection.Logger.Log_Technical("I", $"ExternalSystem.IPaaSCallWrapper.{action}:NotFound", errMsg + ". This is not necessarily an error");
+                _connection.Logger.Log_Technical("D", $"ExternalSystem.IPaaSCallWrapper.{action}:NotFound", errMsg + ". This is not necessarily an error");
             }
             else
             {

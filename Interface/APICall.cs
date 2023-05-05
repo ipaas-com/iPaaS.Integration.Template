@@ -12,10 +12,10 @@ using Integration.DataModels;
 
 namespace Integration.Data.Interface
 {
-    class APICall
+    public class APICall
     {
         public RestClient _integrationClient;
-        private Connection _connection;
+        public Connection Connection;
         private DateTime lastRestRequestCreateDT;   // We use this to determine the total time taken for a given request. We log the DT when a rest request is made (the first step of each
                                                     // wrapped call) and then find the difference in the ResponseHandler.
         public string URL;
@@ -33,7 +33,7 @@ namespace Integration.Data.Interface
             TM_MappingCollectionType CollectionType = TM_MappingCollectionType.NONE, Method RequestMethod = Method.Get)
         {
             this._integrationClient = wrapper._integrationClient;
-            this._connection = wrapper._integrationConnection;
+            this.Connection = wrapper._integrationConnection;
 
             this.URL = URL;
             this.Action = Action;
@@ -112,11 +112,29 @@ namespace Integration.Data.Interface
             return retVal;
         }
 
+        /// <summary>
+        /// This method will call ProcessRequestAsync and either return the response, or an exception. This is used by the BatchExecution class to allow multiple method calls
+        /// and handle any exceptions that come up.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<object> ProcessBatchRequestAsync()
+        {
+            try
+            {
+                var retVal = await ProcessRequestAsync();
+                return retVal;
+            }
+            catch (Exception ex)
+            {
+                return ex;
+            }
+        }
+
         private RestSharp.RestRequest CreateRestRequest(string url)
         {
             RestSharp.RestRequest req = new RestRequest(url, Method.Get);
             req.RequestFormat = DataFormat.Json;
-            req.AddHeader("Authorization", string.Format("Basic {0}", Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", this._connection.Settings.APIUser, this._connection.Settings.APIPassword)))));
+            req.AddHeader("Authorization", string.Format("Basic {0}", Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", this.Connection.Settings.APIUser, this.Connection.Settings.APIPassword)))));
             lastRestRequestCreateDT = DateTime.Now;
             return req;
         }
@@ -126,8 +144,8 @@ namespace Integration.Data.Interface
             if (resp.ErrorException != null)
             {
                 LogRequest(resp.Request, action, true, scope);
-                _connection.Logger.Log_ActivityTracker(string.Format("Failed API Call to {0}", Identity.AppName), "Recieved ErrorException from " + action_CustomerFacing + ". See Tech log for more details", "Error", (int)mappingCollectionType);
-                _connection.Logger.Log_Technical("E", string.Format("{0} CallWrapper.{1}", Identity.AppName, action), resp.ErrorException.Message);
+                Connection.Logger.Log_ActivityTracker(string.Format("Failed API Call to {0}", Identity.AppName), "Recieved ErrorException from " + action_CustomerFacing + ". See Tech log for more details", "Error", (int)mappingCollectionType);
+                Connection.Logger.Log_Technical("E", string.Format("{0} CallWrapper.{1}", Identity.AppName, action), resp.ErrorException.Message);
                 throw new Exception(resp.ErrorException.Message);
             }
 
@@ -138,7 +156,7 @@ namespace Integration.Data.Interface
 
             if (resp.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
-                _connection.Logger.Log_Technical("D", string.Format("{0} CallWrapper.{1}", Identity.AppName, action), "Recieved no content HTTP status");
+                Connection.Logger.Log_Technical("D", string.Format("{0} CallWrapper.{1}", Identity.AppName, action), "Recieved no content HTTP status");
             }
             else if (resp.StatusCode != System.Net.HttpStatusCode.OK && resp.StatusCode != System.Net.HttpStatusCode.Created)
             {
@@ -206,14 +224,14 @@ namespace Integration.Data.Interface
 
                 errMsg = string.Format("Error calling {0} CallWrapper.{1}{2}  (Http Code: {3})", Identity.AppName, action, errMsg, Convert.ToString(resp.StatusCode));
 
-                _connection.Logger.Log_Technical("E", string.Format("{0} CallWrapper.{1}", Identity.AppName, action), errMsg);
+                Connection.Logger.Log_Technical("E", string.Format("{0} CallWrapper.{1}", Identity.AppName, action), errMsg);
                 throw new Exception(errMsg);
             }
 
             LogRequest(resp.Request, action, false, scope);
-            _connection.Logger.Log_ActivityTracker(string.Format("Succesful API Call to {0}", Identity.AppName), "Successful call to " + action_CustomerFacing, "Complete", (int)mappingCollectionType);
-            _connection.Logger.Log_Technical("D", string.Format("{0}CallWrapper.{1}", Identity.AppName, action), "Success");
-            _connection.Logger.Log_Technical("V", string.Format("{0}CallWrapper.{1}", Identity.AppName, action), resp.Content);
+            Connection.Logger.Log_ActivityTracker(string.Format("Succesful API Call to {0}", Identity.AppName), "Successful call to " + action_CustomerFacing, "Complete", (int)mappingCollectionType);
+            Connection.Logger.Log_Technical("D", string.Format("{0}CallWrapper.{1}", Identity.AppName, action), "Success");
+            Connection.Logger.Log_Technical("V", string.Format("{0}CallWrapper.{1}", Identity.AppName, action), resp.Content);
             APIResponse.action = IntegrationAPIResponse.ResponseAction.Continue;
             return APIResponse;
         }
@@ -230,10 +248,10 @@ namespace Integration.Data.Interface
                 logSeverity = "D";
 
             if (request == null)
-                _connection.Logger.Log_Technical("W", string.Format("{0} CallWrapper.{1}:RestReqeuest", Identity.AppName, action), "Unable to retrieve request. This generally indicates an error was returned from the 3rd Party.");
+                Connection.Logger.Log_Technical("W", string.Format("{0} CallWrapper.{1}:RestReqeuest", Identity.AppName, action), "Unable to retrieve request. This generally indicates an error was returned from the 3rd Party.");
             else
             {
-                _connection.Logger.Log_Technical(logSeverity, "CallWrapper." + action + ":RestReqeuest", "Resource: " + request.Resource);
+                Connection.Logger.Log_Technical(logSeverity, "CallWrapper." + action + ":RestReqeuest", "Resource: " + request.Resource);
 
                 foreach (var param in request.Parameters)
                 {
@@ -253,7 +271,7 @@ namespace Integration.Data.Interface
                         paramValueStr = Convert.ToString(param.Value);
 
                     if (param.Name != "Authorization" && param.Name != "Content-Type" && param.Name != "Content_Type" && param.Name != "Accept" && param.Name != "Basic")
-                        _connection.Logger.Log_Technical(logSeverity, string.Format("{0} CallWrapper.{1}:RestReqeuest", Identity.AppName, action), string.Format("Parameter: {0}={1}", param.Name, paramValueStr));
+                        Connection.Logger.Log_Technical(logSeverity, string.Format("{0} CallWrapper.{1}:RestReqeuest", Identity.AppName, action), string.Format("Parameter: {0}={1}", param.Name, paramValueStr));
                 }
             }
         }

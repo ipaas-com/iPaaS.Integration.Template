@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Integration
 {
-    class Constants
+    public class Constants
     {
         public enum TM_MappingCollectionType
         {
@@ -48,7 +48,14 @@ namespace Integration
             PRODUCT_VARIANT_CATEGORY_ASSIGNMENT = 37,
             LOCATION_GROUP = 38,
             VARIANT_KIT = 39,
-            VARIANT_KIT_COMPONENT = 40
+            VARIANT_KIT_COMPONENT = 40,
+            PRODUCT_RELATED_PRODUCT = 41,
+            VARIANT_RELATED_PRODUCT = 42,
+            EMPLOYEE = 43,
+            EMPLOYEE_ADDRESS = 44,
+            TIMESHEET = 45,
+            TIMESHEET_ENTRY = 46,
+            TRANSACTION_LINE_DISCOUNT = 47
         }
 
         public enum TM_MappingDirection

@@ -28,6 +28,10 @@ namespace Integration.Data.Interface
             if (SourceObject == null)
                 throw new Exception(string.Format("Call to GetPrimaryId with unhandled parameters: System={0} {1}, sourceObject is null", Identity.AppName, mappingCollectionType));
 
+            //Check for parentonly types. If it is a parentonly class, we want to check the parent's primary id, not the parentonly object itself.
+            if (SourceObject is ParentOnly)
+                SourceObject = ((ParentOnly)SourceObject).Parent;
+
             // In most cases we use the GetPrimaryId() call in the model class. If there are exceptions, they can be handled here.  
             if (SourceObject is AbstractIntegrationData)
             {
