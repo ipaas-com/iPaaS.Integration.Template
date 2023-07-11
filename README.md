@@ -104,7 +104,7 @@ If this is your first integration project, we recommend choosing a single Mappin
 
 Create .NET Core 3.1 Class Library project named {{your integration name}}.Data
 1. Register Nuget Dependencies
-    * ipaas.integration.sdk (latest stable).  The documentation for the abstract methods contained within can be found [iPaaS.com Integration SDK](https://github.com/ipaas-com/iPaaS.Integration.SDK]).
+    * ipaas.integration.sdk (latest stable).  The documentation for the abstract methods contained within can be found [iPaaS.com Integration SDK](https://github.com/ipaas-com/iPaaS.Integration.SDK).
     * NewtonsoftJSON (latest stable)
     * RestSharp (latest stable)
 
