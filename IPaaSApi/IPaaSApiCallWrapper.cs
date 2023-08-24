@@ -65,6 +65,9 @@ namespace Integration.Data.IPaaSApi
                 case EndpointURL.Transactions:
                     url = _settings.IPaaSApi_Transactions;
                     break;
+                case EndpointURL.Employees:
+                    url = _settings.IPaaSApi_EmployeeUrl;
+                    break;
                 default:
                     throw new Exception("Unhandled endpoint type: " + endpoint.ToString());
             }
@@ -142,6 +145,8 @@ namespace Integration.Data.IPaaSApi
 
             var client = CreateClient(endpoint);
             string url = "v2/External/LookupSpecial";
+            if (endpoint == EndpointURL.Employees)
+                url = "v1/External/LookupSpecial";
 
             var tablename = ConvertMappingCollectionTypeToTableName(MappingCollectionType);
 
@@ -182,6 +187,8 @@ namespace Integration.Data.IPaaSApi
             var tablename = ConvertMappingCollectionTypeToTableName(mappingCollectionType);
 
             string URL = "v2/External/LookupExternal/{id}/{systemId}/{tablename}";
+            if (endpoint == EndpointURL.Employees)
+                URL = "v1/External/LookupExternal/{id}/{systemId}/{tablename}";
 
             var client = CreateClient(endpoint);
             var request = createRequest(client, URL);
@@ -227,6 +234,8 @@ namespace Integration.Data.IPaaSApi
             idRequest.ExternalId = ExternalId;
 
             string URL = "v2/External/UpdateExternalId";
+            if (endpoint == EndpointURL.Employees)
+                URL = "v1/External/UpdateExternalId";
 
             var client = CreateClient(endpoint);
             var request = createRequest(client, URL);

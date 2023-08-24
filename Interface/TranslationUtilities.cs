@@ -58,7 +58,7 @@ namespace Integration.Data.Interface
             switch ((TM_MappingCollectionType)mappingCollectionType)
             {
                 case TM_MappingCollectionType.CUSTOMER:
-                    return new Integration.DataModels.Template();
+                    return new Integration.DataModels.TemplateModel();
                 default:
                     // Add Error Log Here???
                     throw new Exception(string.Format("Call to GetDestinationObject with unhandled parameters: {0}, systemType: {1}", mappingCollectionType, Identity.AppName));
@@ -94,7 +94,8 @@ namespace Integration.Data.Interface
             // If we make it this far and don't have a matching type, we have an error
             throw new Exception(string.Format("Call to CollectionGet with unhandled parameters: System={0}, {1}, sourceObject type={2}", Identity.AppName, mappingCollectionType, modelObject.GetType().Name));
         }
-        public override async Task<ResponseObject> ModelCreateAsync(Integration.Abstract.Connection connection, int mappingCollectionType, object sourceObject, object id)
+
+        public override async Task<ResponseObject> ModelCreateAsync(Integration.Abstract.Connection connection, int mappingCollectionType, object sourceObject, object id, CollisionHandlerSettings collisionHandlerSettings)
         {
             object response = null;
 
@@ -116,7 +117,8 @@ namespace Integration.Data.Interface
             // If we make it this far and don't have a matching type, we have an error
             throw new Exception(string.Format("Call to CollectionCreate with unhandled parameters: System={0}, {1}, sourceObject type={2}", Identity.AppName, mappingCollectionType, sourceObject.GetType().Name));
         }
-        public override async Task<ResponseObject> ModelUpdateAsync(Integration.Abstract.Connection connection, int mappingCollectionType, object sourceObject, object id)
+
+        public override async Task<ResponseObject> ModelUpdateAsync(Integration.Abstract.Connection connection, int mappingCollectionType, object sourceObject, object id, CollisionHandlerSettings collisionHandlerSettings)
         {
             object response = null;
 
@@ -139,6 +141,7 @@ namespace Integration.Data.Interface
             // If we make it this far and don't have a matching type, we have an error
             throw new Exception(string.Format("Call to CollectionUpdate with unhandled parameters: System={0}, {1}, sourceObject type={2}", Identity.AppName, mappingCollectionType, sourceObject.GetType().Name));
         }
+
         public override async Task<ResponseObject> ModelDeleteAsync(Integration.Abstract.Connection connection, int mappingCollectionType, object id)
         {
             var conn = (Connection)connection;
@@ -161,6 +164,29 @@ namespace Integration.Data.Interface
             // If we make it this far and don't have a matching type, we have an error
             throw new Exception(string.Format("Call to CollectionDelete with unhandled parameters: System={0}, {1}, ObjectId={2}", Identity.AppName, mappingCollectionType, id));
         }
+
+        //The PollRequest method is optional to implement. It is only necessary for systems that use polling, rather than (or in addition to) webhooks.
+        public new async Task<List<BulkTransferRequest>> PollRequest(Integration.Abstract.Connection connection, int mappingCollectionType, string filter)
+        {
+            List<BulkTransferRequest> response = null;
+
+            var conn = (Connection)connection;
+            var wrapper = conn.CallWrapper;
+
+            var modelObject = GetDestinationObject(connection, mappingCollectionType);
+            if (modelObject == null)
+                throw new Exception(string.Format("Call to PollRequest with unhandled parameters: System={0} {1}, sourceObject could not be created", Identity.AppName, mappingCollectionType));
+
+            if (modelObject is AbstractIntegrationData)
+            {
+                response = await ((AbstractIntegrationData)modelObject).Poll(wrapper, filter);
+                return response;
+            }
+
+            // If we make it this far and don't have a matching type, we have an error
+            throw new Exception(string.Format("Call to CollectionGet with unhandled parameters: System={0}, {1}, sourceObject type={2}", Identity.AppName, mappingCollectionType, modelObject.GetType().Name));
+        }
+
 
         public override List<TranslationExternalId> CollectAdditionalExternalIds(Integration.Abstract.Connection connection, int mappingCollectionType, object sourceObject, object destinationObject)
         {

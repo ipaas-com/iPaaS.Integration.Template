@@ -47,7 +47,7 @@ namespace Integration.Data.Interface
         private List<TableInfo> GetTables()
         {
             var tables = new List<TableInfo>();
-            tables.Add(GenerateTableInfo("Customer", "Helptext", (int)Integration.Constants.TM_MappingCollectionType.CUSTOMER, typeof(Template)));
+            tables.Add(GenerateTableInfo("Customer", "Helptext", (int)Integration.Constants.TM_MappingCollectionType.CUSTOMER, typeof(TemplateModel)));
             return tables;
         }
 
