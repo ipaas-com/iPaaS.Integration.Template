@@ -64,5 +64,21 @@ namespace Integration
             FROM_IPAAS = 2,
             BIDIRECTIONAL = 3
         }
+
+        /// <summary>
+        /// Scope actions for scopes
+        /// </summary>
+        public enum ScopeAction
+        {
+            NONE,
+            CREATED,
+            UPDATED,
+            DELETED,
+            INITIALIZE,
+            ALL,
+            BULK,
+            POLL,
+            OTHER
+        }
     }
 }

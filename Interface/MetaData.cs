@@ -3,6 +3,7 @@ using Integration.Abstract.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Integration.Constants;
 
 namespace Integration.Data.Interface
 {
@@ -31,6 +32,10 @@ namespace Integration.Data.Interface
         private List<Scope> GetScopes()
         {
             Scopes = new List<Integration.Abstract.Model.Scope>();
+            //These are some examples of scopes you may want to create
+            Scopes.Add(new Scope() { Name = "giftcard/created", Description = "Gift Card Created", MappingCollectionTypeId = (int)TM_MappingCollectionType.GIFT_CARD, ScopeActionId = (int)ScopeAction.CREATED });
+            Scopes.Add(new Scope() { Name = "customer/category/initialize", Description = "Initialize customer categories", MappingCollectionTypeId = (int)TM_MappingCollectionType.CUSTOMER_CATEGORY, ScopeActionId = (int)ScopeAction.INITIALIZE });
+            Scopes.Add(new Scope() { Name = "product/poll", Description = "Poll the destination system for updated products", MappingCollectionTypeId = (int)TM_MappingCollectionType.PRODUCT, ScopeActionId = (int)ScopeAction.POLL });
             return Scopes;
         }
 
