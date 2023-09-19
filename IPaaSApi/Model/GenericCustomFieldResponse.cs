@@ -9,7 +9,7 @@ namespace Integration.Data.IPaaSApi.Model
     {
         #region Properties
         [JsonProperty("id", Order = 10)]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("custom_field_name", Order = 15)]
         public string CustomFieldName { get; set; }

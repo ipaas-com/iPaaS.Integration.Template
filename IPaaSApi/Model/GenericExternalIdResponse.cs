@@ -21,7 +21,7 @@ namespace Integration.Data.IPaaSApi.Model
         public string ExternalId { get; set; }
 
         [JsonProperty("internal_id", Order = 35)]
-        public long? InternalId { get; set; }
+        public string InternalId { get; set; }
 
         [JsonProperty("message", Order = 40)]
         public string Message { get; set; }

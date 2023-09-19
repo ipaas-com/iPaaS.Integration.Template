@@ -8,7 +8,7 @@ namespace Integration.Data.IPaaSApi.Model
     public class BaseResponse
     {
         [JsonProperty("id", Order = 1)]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("tracking_guid", Order = 5)]
         public Guid? TrackingGuid { get; set; }
