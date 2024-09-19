@@ -55,7 +55,14 @@ namespace Integration
             EMPLOYEE_ADDRESS = 44,
             TIMESHEET = 45,
             TIMESHEET_ENTRY = 46,
-            TRANSACTION_LINE_DISCOUNT = 47
+            TRANSACTION_LINE_DISCOUNT = 47,
+            MESSAGE = 48,
+            CUSTOMER_COMPANY = 49,
+            CUSTOMER_COMPANY_ADDRESS  = 50,
+            COMPANY_RELATIONSHIP = 51,
+            CUSTOMER_RELATIONSHIP = 52,
+            CUSTOMER_COMPANY_CATEGORY = 53,
+            LOCATION_ADDRESS = 54
         }
 
         public enum TM_MappingDirection
