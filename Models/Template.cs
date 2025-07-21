@@ -71,6 +71,10 @@ namespace Integration.DataModels
             throw new NotImplementedException();
         }
 
+        public override async Task<List<BulkTransferRequest>> Poll(CallWrapper activeCallWrapper, string filter)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region CustomMethods
