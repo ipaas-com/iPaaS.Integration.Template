@@ -30,7 +30,7 @@ namespace Integration.Data.Interface
         {
             get
             {   //Depending on the environment, the employee url might be under one of two listings 
-                var retVal = GetSetting("Messagess_URL");
+                var retVal = GetSetting("Messages_URL");
                 if (string.IsNullOrEmpty(retVal))
                     retVal = GetSetting("KUP24_URL");
                 return retVal;
