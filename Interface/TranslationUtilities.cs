@@ -26,7 +26,7 @@ namespace Integration.Data.Interface
         public override string GetPrimaryId(Integration.Abstract.Connection connection, int mappingCollectionType, object SourceObject, long? MappingCollectionId = null)
         {
             if (SourceObject == null)
-                throw new Exception(string.Format("Call to GetPrimaryId with unhandled parameters: System={0} {1}, sourceObject is null", Identity.AppName, mappingCollectionType));
+                throw new Exception($"Call to GetPrimaryId with unhandled parameters: System={Identity.AppName} {mappingCollectionType}, sourceObject is null");
 
             //Check for parentonly types. If it is a parentonly class, we want to check the parent's primary id, not the parentonly object itself.
             if (SourceObject is ParentOnly)
@@ -39,7 +39,7 @@ namespace Integration.Data.Interface
             }
             
             // If we make it this far and don't have a matching type, we have an error
-            throw new Exception(string.Format("Call to GetPrimaryId with unhandled parameters: System={0}, {1}, sourceObject type={2}.  No matching object", Identity.AppName, mappingCollectionType, SourceObject.GetType().Name));
+            throw new Exception($"Call to GetPrimaryId with unhandled parameters: System={Identity.AppName}, {mappingCollectionType}, sourceObject type={SourceObject.GetType().Name}.  No matching object");
         }
 
         public override void SetPrimaryId(Integration.Abstract.Connection connection, int mappingCollectionType, object SourceObject, string PrimaryId)
@@ -50,7 +50,7 @@ namespace Integration.Data.Interface
                 return;
             else
                 //if we make it this far and don't have a matching type, we have an error
-                throw new Exception(string.Format("Call to SetPrimaryId with unhandled parameters: System={0}, {1}, sourceObject type={2}", Identity.AppName, mappingCollectionType, SourceObject.GetType().Name));
+                throw new Exception($"Call to SetPrimaryId with unhandled parameters: System={Identity.AppName}, {mappingCollectionType}, sourceObject type={SourceObject.GetType().Name}");
         }
 
         public override object GetDestinationObject(Integration.Abstract.Connection connection, int mappingCollectionType)
@@ -61,7 +61,7 @@ namespace Integration.Data.Interface
                     return new Integration.DataModels.TemplateModel();
                 default:
                     // Add Error Log Here???
-                    throw new Exception(string.Format("Call to GetDestinationObject with unhandled parameters: {0}, systemType: {1}", mappingCollectionType, Identity.AppName));
+                    throw new Exception($"Call to GetDestinationObject with unhandled parameters: {mappingCollectionType}, systemType: {Identity.AppName}");
             }
         }
 
@@ -80,7 +80,7 @@ namespace Integration.Data.Interface
 
             var modelObject = GetDestinationObject(connection, mappingCollectionType);
             if (modelObject == null)
-                throw new Exception(string.Format("Call to CollectionGet with unhandled parameters: System={0} {1}, sourceObject could not be created", Identity.AppName, mappingCollectionType));
+                throw new Exception($"Call to CollectionGet with unhandled parameters: System={Identity.AppName} {mappingCollectionType}, sourceObject could not be created");
 
             if (modelObject is AbstractIntegrationData)
             {
@@ -92,7 +92,7 @@ namespace Integration.Data.Interface
             }
 
             // If we make it this far and don't have a matching type, we have an error
-            throw new Exception(string.Format("Call to CollectionGet with unhandled parameters: System={0}, {1}, sourceObject type={2}", Identity.AppName, mappingCollectionType, modelObject.GetType().Name));
+            throw new Exception($"Call to CollectionGet with unhandled parameters: System={Identity.AppName}, {mappingCollectionType}, sourceObject type={modelObject.GetType().Name}");
         }
 
         public override async Task<ResponseObject> ModelCreateAsync(Integration.Abstract.Connection connection, int mappingCollectionType, object sourceObject, object id, CollisionHandlerSettings collisionHandlerSettings)
@@ -103,7 +103,7 @@ namespace Integration.Data.Interface
             var wrapper = conn.CallWrapper;
 
             if (sourceObject == null)
-                throw new Exception(string.Format("Call to CollectionCreate with unhandled parameters: System={0} {1}, sourceObject is null", Identity.AppName, mappingCollectionType));
+                throw new Exception($"Call to CollectionCreate with unhandled parameters: System={Identity.AppName} {mappingCollectionType}, sourceObject is null");
 
             if (sourceObject is AbstractIntegrationData)
             {
@@ -115,7 +115,7 @@ namespace Integration.Data.Interface
             }
 
             // If we make it this far and don't have a matching type, we have an error
-            throw new Exception(string.Format("Call to CollectionCreate with unhandled parameters: System={0}, {1}, sourceObject type={2}", Identity.AppName, mappingCollectionType, sourceObject.GetType().Name));
+            throw new Exception($"Call to CollectionCreate with unhandled parameters: System={Identity.AppName}, {mappingCollectionType}, sourceObject type={sourceObject.GetType().Name}");
         }
 
         public override async Task<ResponseObject> ModelUpdateAsync(Integration.Abstract.Connection connection, int mappingCollectionType, object sourceObject, object id, CollisionHandlerSettings collisionHandlerSettings)
@@ -126,7 +126,7 @@ namespace Integration.Data.Interface
             var wrapper = conn.CallWrapper;
 
             if (sourceObject == null)
-                throw new Exception(string.Format("Call to CollectionUpdate with unhandled parameters: System={0} {1}, sourceObject is null", Identity.AppName, mappingCollectionType));
+                throw new Exception($"Call to CollectionUpdate with unhandled parameters: System={Identity.AppName} {mappingCollectionType}, sourceObject is null");
 
             // In most cases we use the GetPrimaryId() call in the model class. There are a few exceptions we need to check for first though:
             if (sourceObject is AbstractIntegrationData)
@@ -139,7 +139,7 @@ namespace Integration.Data.Interface
             }
 
             // If we make it this far and don't have a matching type, we have an error
-            throw new Exception(string.Format("Call to CollectionUpdate with unhandled parameters: System={0}, {1}, sourceObject type={2}", Identity.AppName, mappingCollectionType, sourceObject.GetType().Name));
+            throw new Exception($"Call to CollectionUpdate with unhandled parameters: System={Identity.AppName}, {mappingCollectionType}, sourceObject type={sourceObject.GetType().Name}");
         }
 
         public override async Task<ResponseObject> ModelDeleteAsync(Integration.Abstract.Connection connection, int mappingCollectionType, object id)
@@ -149,7 +149,7 @@ namespace Integration.Data.Interface
 
             var Object = GetDestinationObject(connection, mappingCollectionType);
             if (Object == null)
-                throw new Exception(string.Format("Call to CollectionDelete with unhandled parameters: System={0} {1}, sourceObject could not be created", Identity.AppName, mappingCollectionType));
+                throw new Exception($"Call to CollectionDelete with unhandled parameters: System={Identity.AppName} {mappingCollectionType}, sourceObject could not be created");
 
             // In most cases we use the GetPrimaryId() call in the model class. There are a few exceptions we need to check for first though:
             if (Object is AbstractIntegrationData)
@@ -162,7 +162,7 @@ namespace Integration.Data.Interface
             }
 
             // If we make it this far and don't have a matching type, we have an error
-            throw new Exception(string.Format("Call to CollectionDelete with unhandled parameters: System={0}, {1}, ObjectId={2}", Identity.AppName, mappingCollectionType, id));
+            throw new Exception($"Call to CollectionDelete with unhandled parameters: System={Identity.AppName}, {mappingCollectionType}, ObjectId={id}");
         }
 
         //The PollRequest method is optional to implement. It is only necessary for systems that use polling, rather than (or in addition to) webhooks.
@@ -175,7 +175,7 @@ namespace Integration.Data.Interface
 
             var modelObject = GetDestinationObject(connection, mappingCollectionType);
             if (modelObject == null)
-                throw new Exception(string.Format("Call to PollRequest with unhandled parameters: System={0} {1}, sourceObject could not be created", Identity.AppName, mappingCollectionType));
+                throw new Exception($"Call to PollRequest with unhandled parameters: System={Identity.AppName} {mappingCollectionType}, sourceObject could not be created");
 
             if (modelObject is AbstractIntegrationData)
             {
@@ -184,7 +184,7 @@ namespace Integration.Data.Interface
             }
 
             // If we make it this far and don't have a matching type, we have an error
-            throw new Exception(string.Format("Call to CollectionGet with unhandled parameters: System={0}, {1}, sourceObject type={2}", Identity.AppName, mappingCollectionType, modelObject.GetType().Name));
+            throw new Exception($"Call to CollectionGet with unhandled parameters: System={Identity.AppName}, {mappingCollectionType}, sourceObject type={modelObject.GetType().Name}");
         }
 
 
@@ -248,7 +248,7 @@ namespace Integration.Data.Interface
                     //            conn.DataHandlerFunction(CustomerBillingAddressRequest);
                     //    break;
                     default:
-                        connection.Logger.Log_Technical("V", string.Format("{0}.TranslationUtiltiies.HandlePrerequisite", Identity.AppName), "No prereqs required.");
+                        connection.Logger.Log_Technical("D", "{Identity.AppName}.TranslationUtiltiies.HandlePrerequisite", "No prereqs required.");
                         break;
                 }
             }
@@ -280,7 +280,7 @@ namespace Integration.Data.Interface
                     //            conn.DataHandlerFunction(CustomerBillingAddressRequest);
                     //            return null;
                     default:
-                        connection.Logger.Log_Technical("V", string.Format("{0}.TranslationUtiltiies.HandlePostActions", Identity.AppName), "No post actions required.");
+                        connection.Logger.Log_Technical("D", $"{Identity.AppName}.TranslationUtiltiies.HandlePostActions", "No post actions required.");
                         break;
                 }
             }
@@ -333,9 +333,9 @@ namespace Integration.Data.Interface
         {
             var conn = (Connection)connection;
             var wrapper = conn.CallWrapper;
-            connection.Logger.Log_Technical("D", String.Format("{0}.TranslationUtilities.ValidateConnection", Identity.AppName), "Begin validation");
+            connection.Logger.Log_Technical("D", $"{Identity.AppName}.TranslationUtilities.ValidateConnection", "Begin validation");
             var retVal = await wrapper.ValidateConnection();
-            connection.Logger.Log_Technical("D", String.Format("{0}.TranslationUtilities.ValidateConnection", Identity.AppName), "Completed validation");
+            connection.Logger.Log_Technical("D", $"{Identity.AppName}.TranslationUtilities.ValidateConnection", "Completed validation");
             return retVal;
         }
     }

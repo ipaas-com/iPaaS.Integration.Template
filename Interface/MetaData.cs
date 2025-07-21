@@ -17,8 +17,8 @@ namespace Integration.Data.Interface
         public override void LoadMetaData()
         {
             Info = new Integration.Abstract.Model.IntegrationInfo();
-            Info.IntegrationFilename = String.Format("{0}.Data.dll", Identity.AppName);
-            Info.IntegrationNamespace = String.Format("{0}.Data.Interface", Identity.AppName);
+            Info.IntegrationFilename = $"{Identity.AppName}.Data.dll";
+            Info.IntegrationNamespace = $"{Identity.AppName}.Data.Interface";
             Info.Name = Identity.AppName;
             Info.ApiVersion = "1.0"; // Enter the Integration API Version, not the 3rd-Party Application Version
             Info.VersionMajor = 1;

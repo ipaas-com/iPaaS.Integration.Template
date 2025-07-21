@@ -9,11 +9,23 @@ using System.Threading.Tasks;
 using static Integration.Constants;
 using Integration;
 using Integration.DataModels;
+using Integration.Abstract.Helpers;
+using Integration.Abstract.Model;
 
 namespace Integration.Data.Interface
 {
     public class APICall
     {
+        /// <summary>
+        /// Not Found Actions?
+        /// </summary>
+        public enum NotFoundActionEnum
+        {
+            Error, //This is the default behavior. If the target data is not found, throw an error
+            PUTtoPOST, //This is not implemented anywhere yet, but could be used for future reference
+            Expected //If the target data is not found (as indicated by a 404 response), do not throw an error, just return null
+        }
+
         public RestClient _integrationClient;
         public Connection Connection;
         private DateTime lastRestRequestCreateDT;   // We use this to determine the total time taken for a given request. We log the DT when a rest request is made (the first step of each
@@ -25,6 +37,7 @@ namespace Integration.Data.Interface
         public Type ResponseType;
         public Guid TrackingGuid;
         public TM_MappingCollectionType CollectionType;
+        public NotFoundActionEnum NotFoundAction = NotFoundActionEnum.Error;
 
         private List<RestSharpParameterHolder> parameters;
         public bool PUTtoPOST = false;
@@ -134,20 +147,15 @@ namespace Integration.Data.Interface
         {
             RestSharp.RestRequest req = new RestRequest(url, Method.Get);
             req.RequestFormat = DataFormat.Json;
-            req.AddHeader("Authorization", string.Format("Basic {0}", Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", this.Connection.Settings.APIUser, this.Connection.Settings.APIPassword)))));
+            req.AddHeader("Authorization", string.Format("Basic {0}", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{this.Connection.Settings.APIUser}:{this.Connection.Settings.APIPassword}"))));
             lastRestRequestCreateDT = DateTime.Now;
             return req;
         }
 
         private IntegrationAPIResponse HandleResponse(RestSharp.RestResponse resp, string action, string action_CustomerFacing, string scope = null, TM_MappingCollectionType mappingCollectionType = TM_MappingCollectionType.NONE)
         {
-            if (resp.ErrorException != null)
-            {
-                LogRequest(resp.Request, action, true, scope);
-                Connection.Logger.Log_ActivityTracker(string.Format("Failed API Call to {0}", Identity.AppName), "Recieved ErrorException from " + action_CustomerFacing + ". See Tech log for more details", "Error", (int)mappingCollectionType);
-                Connection.Logger.Log_Technical("E", string.Format("{0} CallWrapper.{1}", Identity.AppName, action), resp.ErrorException.Message);
-                throw new Exception(resp.ErrorException.Message);
-            }
+            //If we are logging this, we want to also include how long the call took. We can find the difference between the start DT and now and include that in the success log msg
+            double millisecondsToExecute = (DateTime.Now - lastRestRequestCreateDT).TotalMilliseconds;
 
             IntegrationAPIResponse APIResponse = new IntegrationAPIResponse();
 
@@ -156,7 +164,36 @@ namespace Integration.Data.Interface
 
             if (resp.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
-                Connection.Logger.Log_Technical("D", string.Format("{0} CallWrapper.{1}", Identity.AppName, action), "Recieved no content HTTP status");
+                Connection.Logger.Log_Technical("D", $"{Identity.AppName} CallWrapper.{action}", "Recieved no content HTTP status");
+            }
+            else if (resp.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+            {
+                //This is an example of how to handle a response that indicates we are over the limit of allowed calls on the external system
+                Connection.Logger.Log_Technical("D", $"{Identity.AppName} CallWrapper.{action}", "Recieved TooManyHooks response");
+
+                //Here is an example of returning a response that indicates we will get the full number of calls back in 1 minute
+                var qex = new QuotaException();
+                var qexResponseObject = new ResponseObject();
+                var qexResponseObjectQuota = new ResponseQuota() { QuotaResetDateTime = DateTime.Now.AddMinutes(1) };
+                qexResponseObject.ResponseQuotas.Add(qexResponseObjectQuota);
+                qex.Response = qexResponseObject;
+
+                //We want to throw this custom quota exception rather than a normal exception so that iPaaS knows to hold off on retrying the call until the QuotaResetDateTime has passed.
+                throw qex;
+            }
+            //If this is a NotFound response and we have the notFoundAction as Expected, then we just return an empty response 
+            else if (resp.StatusCode == System.Net.HttpStatusCode.NotFound && NotFoundAction == NotFoundActionEnum.Expected)
+            {
+                LogRequest(resp.Request, action, false, scope);
+                Connection.Logger.Log_Technical("D", $"Succesful API Call to {Identity.AppName}.{action}", $"Successful call to {action_CustomerFacing}. The call returned a 404 Not Found, but that is not an exception for this call");
+                return new IntegrationAPIResponse() { action = IntegrationAPIResponse.ResponseAction.Continue };
+            }
+            else if (resp.ErrorException != null)
+            {
+                LogRequest(resp.Request, action, true, scope);
+                Connection.Logger.Log_ActivityTracker($"Failed API Call to {Identity.AppName}", "Recieved ErrorException from " + action_CustomerFacing + ". See Tech log for more details", "Error", (int)mappingCollectionType);
+                Connection.Logger.Log_Technical("E", $"{Identity.AppName} CallWrapper.{action}", resp.ErrorException.Message);
+                throw new Exception(resp.ErrorException.Message);
             }
             else if (resp.StatusCode != System.Net.HttpStatusCode.OK && resp.StatusCode != System.Net.HttpStatusCode.Created)
             {
@@ -222,16 +259,16 @@ namespace Integration.Data.Interface
                 if (errMsg == "")
                     errMsg += ": " + resp.Content;
 
-                errMsg = string.Format("Error calling {0} CallWrapper.{1}{2}  (Http Code: {3})", Identity.AppName, action, errMsg, Convert.ToString(resp.StatusCode));
+                errMsg = $"Error calling {Identity.AppName} CallWrapper.{action}{errMsg}  (Http Code: {resp.StatusCode})";
 
-                Connection.Logger.Log_Technical("E", string.Format("{0} CallWrapper.{1}", Identity.AppName, action), errMsg);
+                Connection.Logger.Log_Technical("E", $"{Identity.AppName} CallWrapper.{action}", errMsg);
                 throw new Exception(errMsg);
             }
 
             LogRequest(resp.Request, action, false, scope);
-            Connection.Logger.Log_ActivityTracker(string.Format("Succesful API Call to {0}", Identity.AppName), "Successful call to " + action_CustomerFacing, "Complete", (int)mappingCollectionType);
-            Connection.Logger.Log_Technical("D", string.Format("{0}CallWrapper.{1}", Identity.AppName, action), "Success");
-            Connection.Logger.Log_Technical("V", string.Format("{0}CallWrapper.{1}", Identity.AppName, action), resp.Content);
+            Connection.Logger.Log_ActivityTracker($"Succesful API Call to {Identity.AppName}", "Successful call to " + action_CustomerFacing, "Complete", (int)mappingCollectionType);
+            Connection.Logger.Log_Technical("D", $"{Identity.AppName} CallWrapper.{action}", $"Success ({millisecondsToExecute} ms)");
+            Connection.Logger.Log_Technical("D", $"{Identity.AppName} CallWrapper.{action}", resp.Content);
             APIResponse.action = IntegrationAPIResponse.ResponseAction.Continue;
             return APIResponse;
         }
@@ -248,7 +285,7 @@ namespace Integration.Data.Interface
                 logSeverity = "D";
 
             if (request == null)
-                Connection.Logger.Log_Technical("W", string.Format("{0} CallWrapper.{1}:RestReqeuest", Identity.AppName, action), "Unable to retrieve request. This generally indicates an error was returned from the 3rd Party.");
+                Connection.Logger.Log_Technical("W", $"{Identity.AppName} CallWrapper.{action}", "Unable to retrieve request. This generally indicates an error was returned from the 3rd Party.");
             else
             {
                 Connection.Logger.Log_Technical(logSeverity, "CallWrapper." + action + ":RestReqeuest", "Resource: " + request.Resource);
@@ -271,7 +308,7 @@ namespace Integration.Data.Interface
                         paramValueStr = Convert.ToString(param.Value);
 
                     if (param.Name != "Authorization" && param.Name != "Content-Type" && param.Name != "Content_Type" && param.Name != "Accept" && param.Name != "Basic")
-                        Connection.Logger.Log_Technical(logSeverity, string.Format("{0} CallWrapper.{1}:RestReqeuest", Identity.AppName, action), string.Format("Parameter: {0}={1}", param.Name, paramValueStr));
+                        Connection.Logger.Log_Technical(logSeverity, $"{Identity.AppName} CallWrapper.{action}:RestReqeuest", $"Parameter: {param.Name}={paramValueStr}");
                 }
             }
         }
