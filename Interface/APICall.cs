@@ -158,18 +158,16 @@ namespace Integration.Data.Interface
             double millisecondsToExecute = (DateTime.Now - lastRestRequestCreateDT).TotalMilliseconds;
 
             IntegrationAPIResponse APIResponse = new IntegrationAPIResponse();
-
-            APIResponse = new IntegrationAPIResponse();
             APIResponse.data = resp.Content;
 
             if (resp.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
-                Connection.Logger.Log_Technical("D", $"{Identity.AppName} CallWrapper.{action}", "Recieved no content HTTP status");
+                Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", "Recieved no content HTTP status");
             }
             else if (resp.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
             {
                 //This is an example of how to handle a response that indicates we are over the limit of allowed calls on the external system
-                Connection.Logger.Log_Technical("D", $"{Identity.AppName} CallWrapper.{action}", "Recieved TooManyHooks response");
+                Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", "Recieved TooManyHooks response");
 
                 //Here is an example of returning a response that indicates we will get the full number of calls back in 1 minute
                 var qex = new QuotaException();
@@ -192,7 +190,7 @@ namespace Integration.Data.Interface
             {
                 LogRequest(resp.Request, action, true, scope);
                 Connection.Logger.Log_ActivityTracker($"Failed API Call to {Identity.AppName}", "Recieved ErrorException from " + action_CustomerFacing + ". See Tech log for more details", "Error", (int)mappingCollectionType);
-                Connection.Logger.Log_Technical("E", $"{Identity.AppName} CallWrapper.{action}", resp.ErrorException.Message);
+                Connection.Logger.Log_Technical("E", $"{Identity.AppName} APICall.{action}", resp.ErrorException.Message);
                 throw new Exception(resp.ErrorException.Message);
             }
             else if (resp.StatusCode != System.Net.HttpStatusCode.OK && resp.StatusCode != System.Net.HttpStatusCode.Created)
@@ -261,14 +259,14 @@ namespace Integration.Data.Interface
 
                 errMsg = $"Error calling {Identity.AppName} CallWrapper.{action}{errMsg}  (Http Code: {resp.StatusCode})";
 
-                Connection.Logger.Log_Technical("E", $"{Identity.AppName} CallWrapper.{action}", errMsg);
+                Connection.Logger.Log_Technical("E", $"{Identity.AppName} APICall.{action}", errMsg);
                 throw new Exception(errMsg);
             }
 
             LogRequest(resp.Request, action, false, scope);
             Connection.Logger.Log_ActivityTracker($"Succesful API Call to {Identity.AppName}", "Successful call to " + action_CustomerFacing, "Complete", (int)mappingCollectionType);
-            Connection.Logger.Log_Technical("D", $"{Identity.AppName} CallWrapper.{action}", $"Success ({millisecondsToExecute} ms)");
-            Connection.Logger.Log_Technical("D", $"{Identity.AppName} CallWrapper.{action}", resp.Content);
+            Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", $"Success ({millisecondsToExecute} ms)");
+            Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", resp.Content);
             APIResponse.action = IntegrationAPIResponse.ResponseAction.Continue;
             return APIResponse;
         }
@@ -285,10 +283,10 @@ namespace Integration.Data.Interface
                 logSeverity = "D";
 
             if (request == null)
-                Connection.Logger.Log_Technical("W", $"{Identity.AppName} CallWrapper.{action}", "Unable to retrieve request. This generally indicates an error was returned from the 3rd Party.");
+                Connection.Logger.Log_Technical("W", $"{Identity.AppName} APICall.{action}", "Unable to retrieve request. This generally indicates an error was returned from the 3rd Party.");
             else
             {
-                Connection.Logger.Log_Technical(logSeverity, "CallWrapper." + action + ":RestReqeuest", "Resource: " + request.Resource);
+                Connection.Logger.Log_Technical(logSeverity, "APICall." + action + ":RestReqeuest", "Resource: " + request.Resource);
 
                 foreach (var param in request.Parameters)
                 {
@@ -308,7 +306,7 @@ namespace Integration.Data.Interface
                         paramValueStr = Convert.ToString(param.Value);
 
                     if (param.Name != "Authorization" && param.Name != "Content-Type" && param.Name != "Content_Type" && param.Name != "Accept" && param.Name != "Basic")
-                        Connection.Logger.Log_Technical(logSeverity, $"{Identity.AppName} CallWrapper.{action}:RestReqeuest", $"Parameter: {param.Name}={paramValueStr}");
+                        Connection.Logger.Log_Technical(logSeverity, $"{Identity.AppName} APICall.{action}:RestReqeuest", $"Parameter: {param.Name}={paramValueStr}");
                 }
             }
         }
