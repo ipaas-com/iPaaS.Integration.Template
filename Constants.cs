@@ -6,6 +6,18 @@ namespace Integration
 {
     public class Constants
     {
+        /// <summary>
+        /// The OAuth method options
+        /// </summary>
+        public enum ST_SystemTypeAuthorization
+        {
+            NONE,
+            OAUTH_IPAAS_DRIVEN,
+            OAUTH_EXTERNALLY_DRIVEN,
+            OAUTH_EXTERNALLY_DRIVEN_HYBRID,
+            OAUTH_EXTERNALLY_DRIVEN_LOGIN_FIRST
+        }
+
         public enum TM_MappingCollectionType
         {
             NONE = 0,
@@ -71,6 +83,7 @@ namespace Integration
             IMAGE_ASSIGNMENT = 60,
             BULK_PRICE = 61,
             BULK_PRICE_ASSIGNMENT = 62,
+            LOCATION_RELATIONSHIP = 63,
         }
 
         public enum TM_MappingDirection
