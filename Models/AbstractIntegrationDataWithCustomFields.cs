@@ -11,7 +11,7 @@ namespace Integration.DataModels
     // We will use the CustomFields property to normalize those provided by the 3rd party.
     // When organizing the data in this manner, iPaaS.com provides users the ability for CustomField handling and mapping within their subscription settings and formulas.
 
-    // If you perform inheritence of AbstractIntegrationDataWithCustomFields, you must develop handlers in CustomFields.cs
+    // If you perform inheritance of AbstractIntegrationDataWithCustomFields, you must develop handlers in CustomFields.cs
     public abstract class AbstractIntegrationDataWithCustomFields : AbstractIntegrationData
     {
         [JsonIgnore]

@@ -1,4 +1,5 @@
 ﻿using Integration.Abstract.Helpers;
+using Integration.Abstract.Model;
 using Integration.Data.Interface;
 using Newtonsoft.Json;
 using System;
@@ -40,14 +41,14 @@ namespace Integration.DataModels
 
         // =====================================================
         // Do not modify.  This is used by the system.attribute
-        // inheritence enabling [iPaaSIgnore]
+        // inheritance enabling [iPaaSIgnore]
 
         [JsonIgnore]
         public override object TypeId { get { return base.TypeId; } }
 
         // =====================================================
         // Override this method to retrieve the Primary Key
-        // of the external object when retreiving data
+        // of the external object when retrieving data
         // from iPaaS.com
 
         public abstract object GetPrimaryId();
@@ -59,7 +60,7 @@ namespace Integration.DataModels
         public abstract void SetPrimaryId(string PrimaryId, bool ThrowErrorOnInvalid = false);
 
         // =====================================================
-        // Override these methods to performe API calls for
+        // Override these methods to perform API calls for
         // that Mapping Collection type
 
         public abstract Task<object> Get(CallWrapper activeCallWrapper, object _id);
@@ -71,6 +72,13 @@ namespace Integration.DataModels
         public abstract Task<object> Delete(CallWrapper activeCallWrapper, object _id);
 
         public abstract Task<List<BulkTransferRequest>> Poll(CallWrapper activeCallWrapper, string filter);
+
+        //A virtual method that can be overridden by child classes to indicate what features are supported by this data model. This can be called from the MetaData class
+        //to determine what features are supported by the data model.
+        public virtual Features GetFeatureSupport()
+        {
+            return null;
+        }
 
         // =====================================================
         // Use this helper function to Error on Primary Key issues

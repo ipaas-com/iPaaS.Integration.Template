@@ -1,5 +1,7 @@
 ﻿using Integration.Abstract.Helpers;
+using Integration.Abstract.Model;
 using Integration.Data.Interface;
+using Integration.Data.Utilities;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -7,8 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Integration.Abstract.Constants;
 using static Integration.Constants;
-using Integration.Data.Utilities;
 
 namespace Integration.DataModels
 {
@@ -20,6 +22,7 @@ namespace Integration.DataModels
     {
         #region Properties
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        [iPaaSMetaData(Description="This is a unique identifier for the TemplateModel object.", Type=SY_DataType.NUMBER, Required=true)]
         public int? Id { get; set; } //id of the customer
 
         //[JsonProperty("third_party_field_name", NullValueHandling = NullValueHandling.Ignore)]
@@ -76,6 +79,37 @@ namespace Integration.DataModels
             throw new NotImplementedException();
         }
 
+        public new Features GetFeatureSupport()
+        {
+
+            var retVal = new Features();
+            retVal.MappingCollectionType = (int)TM_MappingCollectionType.PRODUCT;
+            retVal.MappingDirectionId = (int)TM_MappingDirection.TO_IPAAS;
+            retVal.Support = Integration.Abstract.Model.Features.SupportLevel.Full;
+            retVal.AdditionalInformation = "";
+            retVal.AllowInitialization = false;
+
+            retVal.CollisionHandlingSupported = false;
+            retVal.CustomfieldSupported = true;
+            retVal.IndependentTransferSupported = true;
+            retVal.PollingSupported = false;
+            retVal.RecordMatchingSupported = false;
+            retVal.ExternalWebhookSupportId = (int)WH_ExternalSupport.FULL_SUPPORT;
+
+            retVal.SupportedEndpoints.Add(new FeatureSupportEndpoint() { Value = "/Template/{Id}", Note = "" });
+
+            retVal.ExternalIdFormats.Add(new ExternalIdFormat() { RecordExternalIdFormat = "{{Id}}" });
+
+            retVal.ExternalDataTypes.Add(new FeatureSupportDataType() { Value = "Template", Note = "The Template table" });
+
+            retVal.SupportedMethods.Add((int)TM_SyncType.ADD);
+            retVal.SupportedMethods.Add((int)TM_SyncType.UPDATE);
+            retVal.SupportedMethods.Add((int)TM_SyncType.ADD_AND_UPDATE);
+            retVal.SupportedMethods.Add((int)TM_SyncType.DELETE);
+            retVal.SupportedMethods.Add((int)TM_SyncType.DELETE_TRIGGERED_UPDATE);
+
+            return retVal;
+        }
         #endregion
 
         #region CustomMethods
