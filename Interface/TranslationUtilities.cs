@@ -1,17 +1,18 @@
-﻿using System;
+﻿using Integration.Abstract.Helpers;
+using Integration.Abstract.Model;
+using Integration.Data;
+using Integration.Data.IPaaSApi;
+using Integration.Data.Utilities;
+using Integration.DataModels;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Integration.DataModels;
-
 using static Integration.Constants;
-using Integration.Abstract.Helpers;
-using Integration.Abstract.Model;
-using Integration.Data.Utilities;
-using Integration.Data.IPaaSApi;
-using Integration.Data;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Integration.Data.Interface
 {
@@ -28,7 +29,7 @@ namespace Integration.Data.Interface
             if (SourceObject == null)
                 throw new Exception($"Call to GetPrimaryId with unhandled parameters: System={Identity.AppName} {mappingCollectionType}, sourceObject is null");
 
-            //Check for parentonly types. If it is a parentonly class, we want to check the parent's primary id, not the parentonly object itself.
+            //Check for ParentOnly types. If it is a ParentOnly class, we want to check the parent's primary id, not the ParentOnly object itself.
             if (SourceObject is ParentOnly)
                 SourceObject = ((ParentOnly)SourceObject).Parent;
 
@@ -198,7 +199,7 @@ namespace Integration.Data.Interface
             return null;
         }
 
-        // Some iPaaS objects have child collections which are obtained from seperate 3rd Party end-points.
+        // Some iPaaS objects have child collections which are obtained from separate 3rd Party end-points.
         // In this case, we want to create an association for each childCollection with the MappingCollectionType.  A childMapping Collection must be created in iPaaS that corresponds to each.
         // If this integration does not have child records, then return an empty collection
         public override List<ChildMapping> GetChildMappings(Integration.Abstract.Connection connection, int mappingCollectionType, long mappingResponseId, int mappingDirection)
@@ -206,7 +207,7 @@ namespace Integration.Data.Interface
             var retVal = new List<ChildMapping>();
             switch ((TM_MappingCollectionType)mappingCollectionType)
             {
-                // This example demonstrates how to process the CUSTOMER_CATEGORY ToIpaas and assigning the value to the customerGroup field during the CUSTOMER HookEvent.
+                // This example demonstrates how to process the CUSTOMER_CATEGORY ToiPaaS and assigning the value to the customerGroup field during the CUSTOMER HookEvent.
 
                 //case TM_MappingCollectionType.CUSTOMER:
                 //    retVal.Add(new ChildMapping() { Field = "customerGroup", MappingCollectionType = (int)TM_MappingCollectionType.CUSTOMER_CATEGORY });
@@ -239,16 +240,26 @@ namespace Integration.Data.Interface
                 {
                     // This example demonstrates how to initiate a HookEvent for CUSTOMER_CATEGORY using the value in the customerGroup field before processing the current CUSTOMER HookEvent.
                     // The payload in the Transfer Request would include the body for the requested hook.  Replace: new Dictionary<string, string>()
-
                     //case TM_MappingCollectionType.CUSTOMER:
-                    //            var CustomerBillingAddressRequest = new TransferRequest(connection: conn,
-                    //                    mappingCollectionType: (int)TM_MappingCollectionType.CUSTOMER_ADDRESS, mappingDirection: transferRequest.MappingDirection, payload: new Dictionary<string, string>(),
-                    //                    scope: "customer/address/created", childRequest: true);
+                    //    var CustomerBillingAddressRequest = new TransferRequest(connection: conn,
+                    //            mappingCollectionType: (int)TM_MappingCollectionType.CUSTOMER_ADDRESS, mappingDirection: transferRequest.MappingDirection, payload: new Dictionary<string, string>(),
+                    //            scope: "customer/address/created", childRequest: true);
 
-                    //            conn.DataHandlerFunction(CustomerBillingAddressRequest);
+                    //    await conn.DataHandlerFunctionAsync(CustomerBillingAddressRequest);
+
+                    //    if(CustomerBillingAddressRequest.HasErrors)
+                    //    {
+                    //        //Note: Depending on the desired behavior, you may want to log and continue instead of throwing an exception here.
+                    //        conn.Logger.Log_Technical("D", $"{Identity.AppName} TranslationUtilities.HandlePrerequisite.{((TM_MappingCollectionType)transferRequest.MappingCollectionType).ToString()}", "An error occurred executing a prerequisite request");
+                    //        if (CustomerBillingAddressRequest.Exception != null)
+                    //            throw CustomerBillingAddressRequest.Exception;
+                    //        else
+                    //            throw new Exception($"Error during prerequisite action for CUSTOMER_ADDRESS creation. This will prevent further processing of the transfer request.");
+                    //    }
+
                     //    break;
                     default:
-                        connection.Logger.Log_Technical("D", "{Identity.AppName}.TranslationUtiltiies.HandlePrerequisite", "No prereqs required.");
+                        connection.Logger.Log_Technical("D", "{Identity.AppName}.TranslationUtilities.HandlePrerequisite", "No Pre-reqs required.");
                         break;
                 }
             }
@@ -280,7 +291,7 @@ namespace Integration.Data.Interface
                     //            conn.DataHandlerFunction(CustomerBillingAddressRequest);
                     //            return null;
                     default:
-                        connection.Logger.Log_Technical("D", $"{Identity.AppName}.TranslationUtiltiies.HandlePostActions", "No post actions required.");
+                        connection.Logger.Log_Technical("D", $"{Identity.AppName}.TranslationUtilities.HandlePostActions", "No post actions required.");
                         break;
                 }
             }

@@ -56,7 +56,7 @@ namespace Integration.Data.Interface
             }
         }
 
-        // This is just a short function to simplify the clapback registration calls. Every call from this class will have the same externalsystemid and direction.
+        // This is just a short function to simplify the clapback registration calls. Every call from this class will have the same ExternalSystemId and direction.
         public void RegisterClapbackCall(int MappingCollectionType, object id)
         {
             // If there is no connection (e.g. we are running this from the Test project), skip this step.

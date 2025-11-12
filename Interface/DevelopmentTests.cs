@@ -44,7 +44,7 @@ namespace Integration.Data.Interface
             var conn = (Connection)connection;
             var wrapper = conn.CallWrapper;
 
-            // Development Tests should start with datamodels that were registered in Interface.Metadata
+            // Development Tests should start with data models that were registered in Interface.Metadata
             // Each field in the subscription mappings for this integration should be represented below setting a value to the corresponding property.
             DataModels.HueAction TestLightAction = new DataModels.HueAction();
 

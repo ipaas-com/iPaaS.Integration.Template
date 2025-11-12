@@ -162,12 +162,12 @@ namespace Integration.Data.Interface
 
             if (resp.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
-                Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", "Recieved no content HTTP status");
+                Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", "Received no content HTTP status");
             }
             else if (resp.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
             {
                 //This is an example of how to handle a response that indicates we are over the limit of allowed calls on the external system
-                Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", "Recieved TooManyHooks response");
+                Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", "Received TooManyHooks response");
 
                 //Here is an example of returning a response that indicates we will get the full number of calls back in 1 minute
                 var qex = new QuotaException();
@@ -183,14 +183,21 @@ namespace Integration.Data.Interface
             else if (resp.StatusCode == System.Net.HttpStatusCode.NotFound && NotFoundAction == NotFoundActionEnum.Expected)
             {
                 LogRequest(resp.Request, action, false, scope);
-                Connection.Logger.Log_Technical("D", $"Succesful API Call to {Identity.AppName}.{action}", $"Successful call to {action_CustomerFacing}. The call returned a 404 Not Found, but that is not an exception for this call");
+                Connection.Logger.Log_Technical("D", $"Successful API Call to {Identity.AppName}.{action}", $"Successful call to {action_CustomerFacing}. The call returned a 404 Not Found, but that is not an exception for this call");
                 return new IntegrationAPIResponse() { action = IntegrationAPIResponse.ResponseAction.Continue };
             }
             else if (resp.ErrorException != null)
             {
+                //If there is an ErrorException, we handle that. Note that your 3rd party API may return error information in a standardized format with other info, such
+                // as rate limit data, specific fields, etc. In that case, you may want to comment this section out and use the section below that processes non-200 status codes.
                 LogRequest(resp.Request, action, true, scope);
-                Connection.Logger.Log_ActivityTracker($"Failed API Call to {Identity.AppName}", "Recieved ErrorException from " + action_CustomerFacing + ". See Tech log for more details", "Error", (int)mappingCollectionType);
+                Connection.Logger.Log_ActivityTracker($"Failed API Call to {Identity.AppName}", "Received ErrorException from " + action_CustomerFacing + ". See Tech log for more details", "Error", (int)mappingCollectionType);
                 Connection.Logger.Log_Technical("E", $"{Identity.AppName} APICall.{action}", resp.ErrorException.Message);
+
+                //Log the full content as well, if there is any
+                if (!string.IsNullOrEmpty(resp.Content))
+                    Connection.Logger.Log_Technical("E", $"{Identity.AppName} APICall.{action}", resp.Content);
+
                 throw new Exception(resp.ErrorException.Message);
             }
             else if (resp.StatusCode != System.Net.HttpStatusCode.OK && resp.StatusCode != System.Net.HttpStatusCode.Created)
@@ -199,7 +206,7 @@ namespace Integration.Data.Interface
                 //string errMsg = ProcessFullErrorMessage(resp);
                 string errMsg = "";
 
-                //There may be a lot of variant in how error responses appear. Sometimes no consisentency even within a single call. E.g. a
+                //There may be a lot of variant in how error responses appear. Sometimes no consistency even within a single call. E.g. a
                 //  NotFound error might be in one format, but a permissions issue is in an entirely different format. So we just deserialize to 
                 //  a dictionary and handle what is there as we can.
                 Dictionary<string, object> errorResponseDictionary;
@@ -263,8 +270,9 @@ namespace Integration.Data.Interface
                 throw new Exception(errMsg);
             }
 
+            //The above handling should cover all error cases. If we get here, it was a successful call.
             LogRequest(resp.Request, action, false, scope);
-            Connection.Logger.Log_ActivityTracker($"Succesful API Call to {Identity.AppName}", "Successful call to " + action_CustomerFacing, "Complete", (int)mappingCollectionType);
+            Connection.Logger.Log_ActivityTracker($"Successful API Call to {Identity.AppName}", "Successful call to " + action_CustomerFacing, "Complete", (int)mappingCollectionType);
             Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", $"Success ({millisecondsToExecute} ms)");
             Connection.Logger.Log_Technical("D", $"{Identity.AppName} APICall.{action}", resp.Content);
             APIResponse.action = IntegrationAPIResponse.ResponseAction.Continue;
@@ -286,7 +294,7 @@ namespace Integration.Data.Interface
                 Connection.Logger.Log_Technical("W", $"{Identity.AppName} APICall.{action}", "Unable to retrieve request. This generally indicates an error was returned from the 3rd Party.");
             else
             {
-                Connection.Logger.Log_Technical(logSeverity, "APICall." + action + ":RestReqeuest", "Resource: " + request.Resource);
+                Connection.Logger.Log_Technical(logSeverity, "APICall." + action + ":RestRequest", "Resource: " + request.Resource);
 
                 foreach (var param in request.Parameters)
                 {
@@ -306,7 +314,7 @@ namespace Integration.Data.Interface
                         paramValueStr = Convert.ToString(param.Value);
 
                     if (param.Name != "Authorization" && param.Name != "Content-Type" && param.Name != "Content_Type" && param.Name != "Accept" && param.Name != "Basic")
-                        Connection.Logger.Log_Technical(logSeverity, $"{Identity.AppName} APICall.{action}:RestReqeuest", $"Parameter: {param.Name}={paramValueStr}");
+                        Connection.Logger.Log_Technical(logSeverity, $"{Identity.AppName} APICall.{action}:RestRequest", $"Parameter: {param.Name}={paramValueStr}");
                 }
             }
         }

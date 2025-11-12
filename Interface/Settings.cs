@@ -14,27 +14,5 @@ namespace Integration.Data.Interface
         public string Url { get { return this.GetSetting("API Url", required: true); } }
         public string APIUser { get { return this.GetSetting("API User", required: true); } }
         public string APIPassword { get { return this.GetSetting("API Password", required: true); } }
-
-        public string IPaaSApi_EmployeeUrl 
-        { 
-            get 
-                {   //Depending on the environment, the employee url might be under one of two listings 
-                    var retVal = GetSetting("Employees_URL");
-                    if(string.IsNullOrEmpty(retVal))
-                        retVal = GetSetting("3D4X_URL");
-                    return retVal;
-                } 
-        }
-
-        public string IPaaSApi_MessageUrl
-        {
-            get
-            {   //Depending on the environment, the employee url might be under one of two listings 
-                var retVal = GetSetting("Messages_URL");
-                if (string.IsNullOrEmpty(retVal))
-                    retVal = GetSetting("KUP24_URL");
-                return retVal;
-            }
-        }
     }
 }
