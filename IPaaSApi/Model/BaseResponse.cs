@@ -19,6 +19,9 @@ namespace Integration.Data.IPaaSApi.Model
         [JsonProperty("external_ids", Order = 999)]
         public List<GenericExternalIdResponse> ExternalIds { get; set; }
 
+        [JsonProperty("extension_fields", Order = 999)]
+        public List<KeyValuePair<string, string>> ExtensionFields { get; set; }
+
         public virtual object GetPrimaryId()
         {
             throw new NotImplementedException("GetPrimaryId was not implemented for this Response method");
