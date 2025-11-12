@@ -7,8 +7,8 @@ using System.Collections.Generic;
 namespace Integration.Data.Utilities
 {
     /// <summary>
-    /// As of RestSharp 1.0.7, there is no official support for newtonsoft, nor is there a documented way to add default serialization settings. So we solve both problems
-    /// with this class: it implements the newtonsoft serializer and sets default null handling to our standard style.
+    /// As of RestSharp 1.0.7, there is no official support for NewtonSoft, nor is there a documented way to add default serialization settings. So we solve both problems
+    /// with this class: it implements the NewtonSoft serializer and sets default null handling to our standard style.
     /// </summary>
     public class RestSharpNewtonsoftSerializer : IRestSerializer
     {

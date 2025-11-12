@@ -15,7 +15,7 @@ namespace Integration.Template.Utilities
     /// If no batchSize is specified, the iPaaS setting for "Concurrent Batch Executions" will be used.
     /// 
     /// A sample usage of this might look like the following. In this case, we have a list of variants that need to each make a PUT call to the API. The code below shows how to queue up 
-    /// a list of APICalls, execute them using this BatchExecution model, then save the resutls into the responseVariants variable:
+    /// a list of APICalls, execute them using this BatchExecution model, then save the results into the responseVariants variable:
     /// 
     /// var variantPutAndPostCalls = new List<APICall>();
     ///  var responseVariants = new List<Variants>()
@@ -42,7 +42,7 @@ namespace Integration.Template.Utilities
         public bool StopProcessingAfterException;
 
         public List<object> SuccessfulResponses;
-        public List<Exception> ExceptionRespones;
+        public List<Exception> ExceptionResponse;
 
         public BatchExecution(List<APICall> apiCalls, int? batchSize = null, bool stopProcessingAfterException = true)
         {
@@ -67,7 +67,7 @@ namespace Integration.Template.Utilities
             BatchSize = batchSize.Value;
             StopProcessingAfterException = stopProcessingAfterException;
             SuccessfulResponses = new List<object>();
-            ExceptionRespones = new List<Exception>();
+            ExceptionResponse = new List<Exception>();
         }
 
         public async Task<List<T>> ExecuteAPICallsInBatch<T>()
@@ -85,7 +85,7 @@ namespace Integration.Template.Utilities
                 foreach (var response in responses)
                 {
                     if (response is Exception)
-                        ExceptionRespones.Add((Exception)response);
+                        ExceptionResponse.Add((Exception)response);
                     else
                         SuccessfulResponses.Add(response);
                 }
@@ -93,17 +93,17 @@ namespace Integration.Template.Utilities
                 if (HasExceptions())
                 {
                     if (StopProcessingAfterException)
-                        throw new Exception($"Recieved an exception during batch run on of {currentApiCalls.First().Action}. {FirstExceptionMessage()}");
+                        throw new Exception($"Received an exception during batch run on of {currentApiCalls.First().Action}. {FirstExceptionMessage()}");
                     else
-                        ApiCalls[0].Connection.Logger.Log_Technical("D", "BatchExecution.ExecuteAPICallsInBatch", $"Errors during batch, but processing will continue. (Most recent: {currentApiCalls.First().Action}:{FirstExceptionMessage()}). Remaining: {ApiCalls.Count() - (i * BatchSize)}. Total Successful calls: {SuccessfulResponses.Count}, Total Errors: {ExceptionRespones.Count}");
+                        ApiCalls[0].Connection.Logger.Log_Technical("D", "BatchExecution.ExecuteAPICallsInBatch", $"Errors during batch, but processing will continue. (Most recent: {currentApiCalls.First().Action}:{FirstExceptionMessage()}). Remaining: {ApiCalls.Count() - (i * BatchSize)}. Total Successful calls: {SuccessfulResponses.Count}, Total Errors: {ExceptionResponse.Count}");
                 }
                 else if (BatchSize > 1) //Include details about each size, unless the size is 1 (i.e. we are in DebugMode), in which case it is unnecessary
                     ApiCalls[0].Connection.Logger.Log_Technical("D", "BatchExecution.ExecuteAPICallsInBatch", $"Successfully completed batch of {BatchSize} in {(DateTime.Now - batchStartDT).TotalMilliseconds} ms (Most recent: {currentApiCalls.First().Action}). Remaining: {ApiCalls.Count() - (i * BatchSize)}");
             }
 
-            //if (ExceptionRespones.Count > 0)
+            //if (ExceptionResponse.Count > 0)
             //{
-            //    foreach (var exception in ExceptionRespones)
+            //    foreach (var exception in ExceptionResponse)
             //    {
             //        Console.WriteLine($"Exception: {exception.Message}");
             //    }
@@ -114,14 +114,14 @@ namespace Integration.Template.Utilities
 
         public bool HasExceptions()
         {
-            return ExceptionRespones.Count() > 0;
+            return ExceptionResponse.Count() > 0;
         }
 
         public string FirstExceptionMessage()
         {
-            if (ExceptionRespones != null || ExceptionRespones.Count == 0)
+            if (ExceptionResponse != null || ExceptionResponse.Count == 0)
                 return null;
-            return ExceptionRespones[0].Message;
+            return ExceptionResponse[0].Message;
         }
 
         //Return a typed list
