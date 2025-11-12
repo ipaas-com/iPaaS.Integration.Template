@@ -1,5 +1,6 @@
 ﻿using Integration.Data.Interface;
 using Integration.Data.IPaaSApi.Model;
+using Integration.Template.IPaaSApi;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -27,7 +28,9 @@ namespace Integration.Data.IPaaSApi
             SSO,
             Subscriptions,
             Transactions,
-            Employees
+            Employees,
+            Messages,
+            Hooks
         }
 
         private Connection _connection;
@@ -67,6 +70,9 @@ namespace Integration.Data.IPaaSApi
                     break;
                 case EndpointURL.Employees:
                     url = _settings.IPaaSApi_EmployeeUrl;
+                    break;
+                case EndpointURL.Messages:
+                    url = _settings.IPaaSApi_MediaUrl;
                     break;
                 default:
                     throw new Exception("Unhandled endpoint type: " + endpoint.ToString());
@@ -114,7 +120,7 @@ namespace Integration.Data.IPaaSApi
             {
                 //If the status code is not found, we don't want to throw an exception, but we do want to log it.
                 _connection.Logger.Log_ActivityTracker("Recieved Ok from externalSystem's iPaaSCallWrapper." + action + "", "API Call to iPaaS (via external dll) was succesful", "Verbose", 0);
-                _connection.Logger.Log_Technical("V", $"ExternalSystem.IPaaSCallWrapper.{action}:Success", "Successful call");
+                _connection.Logger.Log_Technical("D", $"ExternalSystem.IPaaSCallWrapper.{action}:Success", "Successful call");
             }
         }
 
@@ -190,6 +196,9 @@ namespace Integration.Data.IPaaSApi
             if (endpoint == EndpointURL.Employees)
                 URL = "v1/External/LookupExternal/{id}/{systemId}/{tablename}";
 
+            var apiCall = new iPaaSApiCall(URL, endpoint, typeof(string), )
+
+
             var client = CreateClient(endpoint);
             var request = createRequest(client, URL);
             request.AddParameter("id", id, ParameterType.UrlSegment);
@@ -209,6 +218,8 @@ namespace Integration.Data.IPaaSApi
             var outputStr = Convert.ToString(output);
             if (outputStr.StartsWith("\"") && outputStr.EndsWith("\""))
                 outputStr = outputStr.Substring(1, outputStr.Length - 2);
+
+
 
             //If the response indicates that we are returning deleted data, what we return depends on if we allow deleted data or not.
             //  For delete hook lookups, we do allow deleted data, but other calls do not.
