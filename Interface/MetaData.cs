@@ -135,7 +135,7 @@ namespace Integration.Data.Interface
             foreach(var member in members)
             {
                 //Do not use iPaaS ignore fields
-                if (member.IsDefined(typeof(iPaaSMetaDataAttribute), true))
+                if (member.IsDefined(typeof(iPaaSIgnore), true))
                     continue;
 
 
@@ -193,3 +193,4 @@ namespace Integration.Data.Interface
         }
     }
 }
+
