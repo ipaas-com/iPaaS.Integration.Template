@@ -1,6 +1,5 @@
 ﻿using Integration.Data.Interface;
 using Integration.Data.IPaaSApi.Model;
-using Integration.Template.IPaaSApi;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -195,9 +194,6 @@ namespace Integration.Data.IPaaSApi
             string URL = "v2/External/LookupExternal/{id}/{systemId}/{tablename}";
             if (endpoint == EndpointURL.Employees)
                 URL = "v1/External/LookupExternal/{id}/{systemId}/{tablename}";
-
-            var apiCall = new iPaaSApiCall(URL, endpoint, typeof(string), )
-
 
             var client = CreateClient(endpoint);
             var request = createRequest(client, URL);
