@@ -75,7 +75,7 @@ namespace Integration.Data.Interface
         {
             var features = new List<Features>();
 
-            features.Add((new TemplateModel()).GetFeatureSupport());
+            features.AddRange((new TemplateModel()).GetFeatureSupport());
             
             return features;
         }
@@ -135,7 +135,7 @@ namespace Integration.Data.Interface
             foreach(var member in members)
             {
                 //Do not use iPaaS ignore fields
-                if (member.IsDefined(typeof(iPaaSIgnore), true))
+                if (member.IsDefined(typeof(iPaaSMetaDataAttribute), true))
                     continue;
 
 
@@ -193,4 +193,3 @@ namespace Integration.Data.Interface
         }
     }
 }
-
