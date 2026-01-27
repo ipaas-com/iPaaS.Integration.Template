@@ -79,34 +79,39 @@ namespace Integration.DataModels
             throw new NotImplementedException();
         }
 
-        public new Features GetFeatureSupport()
+        public new List<Features> GetFeatureSupport()
         {
 
-            var retVal = new Features();
-            retVal.MappingCollectionType = (int)TM_MappingCollectionType.PRODUCT;
-            retVal.MappingDirectionId = (int)TM_MappingDirection.TO_IPAAS;
-            retVal.Support = Integration.Abstract.Model.Features.SupportLevel.Full;
-            retVal.AdditionalInformation = "";
-            retVal.AllowInitialization = false;
+            var retValToIPaaS = new Features();
+            retValToIPaaS.MappingCollectionType = (int)TM_MappingCollectionType.PRODUCT;
+            retValToIPaaS.MappingDirectionId = (int)TM_MappingDirection.TO_IPAAS;
+            retValToIPaaS.Support = Integration.Abstract.Model.Features.SupportLevel.Full;
+            retValToIPaaS.AdditionalInformation = "";
+            retValToIPaaS.AllowInitialization = false;
 
-            retVal.CollisionHandlingSupported = false;
-            retVal.CustomfieldSupported = true;
-            retVal.IndependentTransferSupported = true;
-            retVal.PollingSupported = false;
-            retVal.RecordMatchingSupported = false;
-            retVal.ExternalWebhookSupportId = (int)WH_ExternalSupport.FULL_SUPPORT;
+            retValToIPaaS.CollisionHandlingSupported = false;
+            retValToIPaaS.CustomfieldSupported = true;
+            retValToIPaaS.IndependentTransferSupported = true;
+            retValToIPaaS.PollingSupported = false;
+            retValToIPaaS.RecordMatchingSupported = false;
+            retValToIPaaS.ExternalWebhookSupportId = (int)WH_ExternalSupport.FULL_SUPPORT;
 
-            retVal.SupportedEndpoints.Add(new FeatureSupportEndpoint() { Value = "/Template/{Id}", Note = "" });
+            retValToIPaaS.SupportedEndpoints.Add(new FeatureSupportEndpoint() { Value = "/Template/{Id}", Note = "" });
 
-            retVal.ExternalIdFormats.Add(new ExternalIdFormat() { RecordExternalIdFormat = "{{Id}}" });
+            retValToIPaaS.ExternalIdFormats.Add(new ExternalIdFormat() { RecordExternalIdFormat = "{{Id}}" });
 
-            retVal.ExternalDataTypes.Add(new FeatureSupportDataType() { Value = "Template", Note = "The Template table" });
+            retValToIPaaS.ExternalDataTypes.Add(new FeatureSupportDataType() { Value = "Template", Note = "The Template table" });
 
-            retVal.SupportedMethods.Add((int)TM_SyncType.ADD);
-            retVal.SupportedMethods.Add((int)TM_SyncType.UPDATE);
-            retVal.SupportedMethods.Add((int)TM_SyncType.ADD_AND_UPDATE);
-            retVal.SupportedMethods.Add((int)TM_SyncType.DELETE);
-            retVal.SupportedMethods.Add((int)TM_SyncType.DELETE_TRIGGERED_UPDATE);
+            retValToIPaaS.SupportedMethods.Add((int)TM_SyncType.ADD);
+            retValToIPaaS.SupportedMethods.Add((int)TM_SyncType.UPDATE);
+            retValToIPaaS.SupportedMethods.Add((int)TM_SyncType.ADD_AND_UPDATE);
+            retValToIPaaS.SupportedMethods.Add((int)TM_SyncType.DELETE);
+            retValToIPaaS.SupportedMethods.Add((int)TM_SyncType.DELETE_TRIGGERED_UPDATE);
+
+            //If the feature supports mapping FROM_IPAAS, add that here as well
+
+            var retVal = new List<Features>();
+            retVal.Add(retValToIPaaS);
 
             return retVal;
         }

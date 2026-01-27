@@ -75,7 +75,7 @@ namespace Integration.DataModels
 
         //A virtual method that can be overridden by child classes to indicate what features are supported by this data model. This can be called from the MetaData class
         //to determine what features are supported by the data model.
-        public virtual Features GetFeatureSupport()
+        public virtual List<Features> GetFeatureSupport()
         {
             return null;
         }
