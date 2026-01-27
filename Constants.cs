@@ -90,7 +90,7 @@ namespace Integration
         {
             TO_IPAAS = 1,
             FROM_IPAAS = 2,
-            BIDIRECTIONAL = 3
+            //BIDIRECTIONAL = 3 //Bidirectional is no longer supported as a mapping direction in most places
         }
 
         /// <summary>
