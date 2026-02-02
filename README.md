@@ -72,11 +72,9 @@ Each Data Model has a corresponding MappingCollection name which it will be rela
 
 ## iPaaS.com Processing Engine Order of Events
 
+  <img width="1152" height="960" alt="Integration Process Flow (To iPaaS)" src="https://github.com/user-attachments/assets/f77b5d19-ad0f-42cb-97c9-9116e88411ea" />
 
-  ![Integration Process Flow (To iPaaS)](https://cms.ipaas.com/sites/default/files/2023-04/iPaaSExternalDLLProcessFlow-ToiPaaS_0.png "Integration Process Flow (To iPaaS)")
-  
-  ![Integration Process Flow (From iPaaS)](https://cms.ipaas.com/sites/default/files/2023-04/iPaaSExternalDLLProcessFlow-FromiPaaS_0.png "Integration Process Flow (From iPaaS)")
-
+  ![Integration Process Flow (From iPaaS)](https://github.com/user-attachments/assets/d276b72a-15b0-47fe-b32e-e2e386123087)
 
 ## RESEARCH AND PLANNING
 
@@ -409,4 +407,5 @@ Optional Additions
 When successful, Schedule for certification by emailing support@ipaas.com.
 
 ====================================================================
+
 
