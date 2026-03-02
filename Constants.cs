@@ -4,6 +4,11 @@ using System.Text;
 
 namespace Integration
 {
+    /// <summary>
+    /// A useful set of reference constants to use throughout the integration. These include enums for OAuth methods, mapping collection types, mapping directions, and scope 
+    /// actions, which can be used in MetaData definitions and throughout the codebase to ensure consistency and readability.
+    /// Do not modify any of these entries unless directed by iPaaS.com
+    /// </summary>
     public class Constants
     {
         /// <summary>
