@@ -84,16 +84,17 @@ iPaaS.com refers to data flows as having 2 required properties:
 2.  A Direction that indicates the direction of data transfer. All data will either flow "To iPaaS.com" or "From iPaaS.com".
 
 Important: It is recommended to make a list of all the Data Flows the new integration is planning to support. If this is your first integration project, we recommend choosing a single MappingCollection to integrate initially.
-SETUP
-Create .NET Core 3.1 Class Library project named {{your integration name}}.Data
+
+### SETUP
+Create .NET 8.0 Class Library project named {{your integration name}}.Data
 
 1. Register NuGet Dependencies
      * ipaas.integration.sdk (latest stable). The documentation for the abstract methods contained within can be found iPaaS.com Integration SDK.
      * NewtonsoftJSON (latest stable)
      * RestSharp (latest stable)
 2. Copy the contents of this template file structure to your new project:
-     * Helpers
      * Interface
+     * IPaaSApi
      * Models
      * Utilities
      * Constants.cs
@@ -118,7 +119,7 @@ The CallWrapper class will override methods from Integration.Abstract.CallWrappe
 
 The Connection class will override methods from Integration.Abstract.Connection. This is the master class for a given connection to a given site. Other interface classes will be created as locally-typed instances, such as CallWrapper, Settings, TranslationUtilities, CustomFieldHandler, Etc
 
-### Interface\ConversionFunction.cs
+### Interface\ConversionFunctions.cs
 
 The Connection class enables Integrators to build Static methods for performing routine transformations that are specific to the external system. Methods provided here can be accessed by the subscriber from within their UI portal when building mappings.
 
@@ -225,6 +226,7 @@ The remaining steps are optional if they apply to the external system. (Read mor
 7.  Define the Method EstimateTotalAPICallsMade(...) in Interface\TranslationUtilities.cs (If applicable)
 8.  Define the Method UpdateWebhookSubscriptionAsync(...) in Interface\TranslationUtilities.cs (If applicable)
 9.  Define the Method InitializeData(...) in Interface\TranslationUtilities.cs (If applicable)
+10.  Define the Method PollRequest(...) in Interface\TranslationUtilities.cs (If applicable)
 
 ## Logging Activity with iPaaS.com
 iPaaS.com provides an easy way to log technical activity from within your integration at runtime for diagnosing issues, both during testing and once the integration is being used in a production environment.
@@ -274,7 +276,7 @@ After you successfully upload a new Integration:
 
 If the external application you are certifying an integration for provides webhooks, chances are that the webhook format is unique to that system. iPaaS.com provides a Dynamic Hook receiver, which you can configure to receive webhooks in the format provided by the external application.
 
-Return to your account portal in the integrator experience to configure the Webhook Receiver.
+Edit the GetWebhookConfiguration method in the Interface\MetaData.cs file.
 
 ## Certifying your Integration
 
@@ -402,7 +404,7 @@ Optional Additions
 -  Define the Method CollectAdditionalExternalIds() in Interface\TranslationUtilities.cs (If applicable)
 -  Define the Method EstimateTotalAPICallsMade() in Interface\TranslationUtilities.cs (If applicable)
 -  Define the Methods in Interface\CustomFieldHandler.cs (If applicable)
--  Build Custom Functions in Interface\ConversionFunction.cs (If applicable)
+-  Build Custom Functions in Interface\ConversionFunctions.cs (If applicable)
 
 When successful, Schedule for certification by emailing support@ipaas.com.
 
