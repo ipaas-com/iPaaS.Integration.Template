@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Runtime.Serialization;
 using static Integration.Constants;
+using System.Runtime.Caching;
 
 namespace Integration.Data.Interface
 {
@@ -88,6 +89,32 @@ namespace Integration.Data.Interface
             }
 
             return "Unknown Issue Executing ValidateConnection";
+        }
+
+        //Some calls, especially TableEntryAsync are expensive and often repeated during the course of a single transfer. We use .NET's built in MemoryCache
+        //  feature to store cached values. This cache exists only through the life of a single transfer.
+        private static MemoryCache _memoryCache;
+        public static void ValidateMemoryCache()
+        {
+            if (_memoryCache == null)
+                _memoryCache = new MemoryCache($"{Identity.AppName}:General");
+        }
+
+        public object CheckCache(string cacheKey, string location)
+        {
+            //Initialize (if necessary) and search for cached data
+            ValidateMemoryCache();
+            var cachedVal = _memoryCache.Get(cacheKey);
+
+            if (cachedVal != null)
+                _integrationConnection.Logger.Logger_Technical("V", location, $"Returning cached value for table data: {cacheKey}");
+            return cachedVal;
+        }
+
+        public void SaveToCache(string cacheKey, object value)
+        {
+            ValidateMemoryCache();
+            _memoryCache.Add(cacheKey, value, DateTimeOffset.Now.AddSeconds(60));//Add any data returned here to the local cache
         }
     }
 }

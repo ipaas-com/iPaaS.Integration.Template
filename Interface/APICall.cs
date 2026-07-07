@@ -17,7 +17,7 @@ namespace Integration.Data.Interface
     public class APICall
     {
         /// <summary>
-        /// Not Found Actions?
+        /// If the call returns a 404 not found, how should that response be treated?
         /// </summary>
         public enum NotFoundActionEnum
         {

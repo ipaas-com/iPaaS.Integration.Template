@@ -100,6 +100,7 @@ namespace Integration.Data.IPaaSApi
             RestSharp.RestRequest req = new RestRequest(url, Method.Get);
             req.RequestFormat = DataFormat.Json;
             req.AddHeader("Authorization", "Bearer " + _settings.IPaaSApi_Token);
+            req.AddHeader("X-Client-Id", _settings.CompanyClientId);
             return req;
         }
 
