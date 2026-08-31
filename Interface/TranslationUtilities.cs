@@ -319,7 +319,7 @@ namespace Integration.Data.Interface
         /// </summary>
         /// <param name="mappingCollectionType"></param>
         /// <returns></returns>
-        public new long EstimateTotalAPICallsMade(Integration.Abstract.Connection connection, int mappingCollectionType, object sourceObject)
+        public new long EstimateTotalAPICallsMade(Integration.Abstract.Connection connection, int mappingCollectionType, object sourceObject, int direction)
         {
             // By Default, we estimate 1
             long retVal = 1;
