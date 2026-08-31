@@ -290,14 +290,15 @@ iPaaS.com provides a Dynamic Hook receiver, which you can configure to receive w
 
 ## Certifying your Integration
 
-1. Describe Here
+iPaaS.com will review your integration and provide any needed feedback. 
 
-Once all testing is completed, we will generate Template mappings in your integration from the subscriber account that we tested on.
+Review for a new integration can take up to 10 business days and 5 or more for any enhancements.
+More information about the timeline for review and deployment can be found [here](https://docs.google.com/spreadsheets/d/1GHzrWL1P8vyijXaf4syiONJ_zXEhy1zJLhLr0aHNOqI/edit?gid=569088587#gid=569088587).
 
 
 ## Sample New Integration Project Plan
 ====================================================================  
-PreRequisites (??? Days)
+PreRequisites (1-2 Days)
 
 	Establish an external system Sandbox
 		- Verify login credentials for the UI
