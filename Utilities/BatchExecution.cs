@@ -119,7 +119,7 @@ namespace Integration.Template.Utilities
 
         public string FirstExceptionMessage()
         {
-            if (ExceptionResponse != null || ExceptionResponse.Count == 0)
+            if (ExceptionResponse == null || ExceptionResponse.Count == 0)
                 return null;
             return ExceptionResponse[0].Message;
         }
