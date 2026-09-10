@@ -66,10 +66,20 @@ namespace Integration.Data.Interface
             }
         }
 
-        public override Task InitializeData(Integration.Abstract.Connection connection, int mappingCollectionType)
+        public override async Task InitializeData(Integration.Abstract.Connection connection, int mappingCollectionType)
         {
-            // nothing to initialize
-            return null;
+            var conn = (Connection)connection;
+            var wrapper = conn.CallWrapper;
+
+            switch ((TM_MappingCollectionType)mappingCollectionType)
+            {
+                case TM_MappingCollectionType.CUSTOMER:
+                    await (new Integration.DataModels.TemplateModel()).Initialize(wrapper);
+                    break;
+                default:
+                    // Add Error Log Here???
+                    throw new Exception($"Call to GetDestinationObject with unhandled parameters: {mappingCollectionType}, systemType: {Identity.AppName}");
+            }
         }
 
         public override async Task<ResponseObject> ModelGetAsync(Integration.Abstract.Connection connection, int mappingCollectionType, object id)

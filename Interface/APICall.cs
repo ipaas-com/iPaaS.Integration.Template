@@ -186,20 +186,25 @@ namespace Integration.Data.Interface
                 Connection.Logger.Log_Technical("D", $"Successful API Call to {Identity.AppName}.{action}", $"Successful call to {action_CustomerFacing}. The call returned a 404 Not Found, but that is not an exception for this call");
                 return new IntegrationAPIResponse() { action = IntegrationAPIResponse.ResponseAction.Continue };
             }
-            else if (resp.ErrorException != null)
-            {
-                //If there is an ErrorException, we handle that. Note that your 3rd party API may return error information in a standardized format with other info, such
-                // as rate limit data, specific fields, etc. In that case, you may want to comment this section out and use the section below that processes non-200 status codes.
-                LogRequest(resp.Request, action, true, scope);
-                Connection.Logger.Log_ActivityTracker($"Failed API Call to {Identity.AppName}", "Received ErrorException from " + action_CustomerFacing + ". See Tech log for more details", "Error", (int)mappingCollectionType);
-                Connection.Logger.Log_Technical("E", $"{Identity.AppName} APICall.{action}", resp.ErrorException.Message);
 
-                //Log the full content as well, if there is any
-                if (!string.IsNullOrEmpty(resp.Content))
-                    Connection.Logger.Log_Technical("E", $"{Identity.AppName} APICall.{action}", resp.Content);
+            //This branch is a simplified, general use error handler. Developers should either 1) implement the system-specific handler in the branch below
+            //or 2) comment that out and uncomment this branch to return a generic exception. The former is preferred, but not all integrations provide
+            //uniform exceptions or customize responses.
+            //else if (resp.ErrorException != null)
+            //{
+            //    //If there is an ErrorException, we handle that. Note that your 3rd party API may return error information in a standardized format with other info, such
+            //    // as rate limit data, specific fields, etc. In that case, you may want to comment this section out and use the section below that processes non-200 status codes.
+            //    LogRequest(resp.Request, action, true, scope);
+            //    Connection.Logger.Log_ActivityTracker($"Failed API Call to {Identity.AppName}", "Received ErrorException from " + action_CustomerFacing + ". See Tech log for more details", "Error", (int)mappingCollectionType);
+            //    Connection.Logger.Log_Technical("E", $"{Identity.AppName} APICall.{action}", resp.ErrorException.Message);
 
-                throw new Exception(resp.ErrorException.Message);
-            }
+            //    //Log the full content as well, if there is any
+            //    if (!string.IsNullOrEmpty(resp.Content))
+            //        Connection.Logger.Log_Technical("E", $"{Identity.AppName} APICall.{action}", resp.Content);
+
+            //    throw new Exception(resp.ErrorException.Message);
+            //}
+
             else if (resp.StatusCode != System.Net.HttpStatusCode.OK && resp.StatusCode != System.Net.HttpStatusCode.Created)
             {
                 LogRequest(resp.Request, action, true);

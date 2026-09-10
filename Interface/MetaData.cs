@@ -181,6 +181,8 @@ namespace Integration.Data.Interface
 
             if (type == typeof(int) || type == typeof(int?) || type == typeof(long) || type == typeof(long?))
                 return "number";
+            if (type == typeof(decimal) || type == typeof(decimal?) || type == typeof(double) || type == typeof(double?) || type == typeof(float) || type == typeof(float?))
+                return "number";
             if (type == typeof(bool) || type == typeof(bool?))
                 return "bool";
             if (type == typeof(DateTime) || type == typeof(DateTime?))

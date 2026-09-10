@@ -21,11 +21,11 @@ namespace Integration.DataModels
     public class TemplateModel : AbstractIntegrationData
     {
         #region Properties
-        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("id")]
         [iPaaSMetaData(Description="This is a unique identifier for the TemplateModel object.", Type=SY_DataType.NUMBER, Required=true)]
         public int? Id { get; set; } //id of the customer
 
-        //[JsonProperty("third_party_field_name", NullValueHandling = NullValueHandling.Ignore)]
+        //[JsonProperty("third_party_field_name")]
         //public string ThirdPartyFieldName { get; set; }
 
         //[JsonIgnore]
@@ -53,6 +53,9 @@ namespace Integration.DataModels
             //var apiCall = new APICall(activeCallWrapper, $"/admin/api/{activeCallWrapper?.ApiVersion}/customers/" + id + ".json", "Customer_GET(id: " + id + ")",
             //    "LOAD Customer (" + id + ")", typeof(RequestCustomer), activeCallWrapper?.TrackingGuid,
             //    Constants.TM_MappingCollectionType.CUSTOMER);
+            ////If the external api responds with a 404 when a requested object does not exist, uncomment the line below and set the NotFoundAction
+            ////so that the retrieval attempt does not throw an error
+            ////apiCall.NotFoundAction = APICall.NotFoundActionEnum.Expected;
             //var output = (RequestCustomer)await apiCall.ProcessRequestAsync();
             //return output.customer;
 
@@ -78,6 +81,14 @@ namespace Integration.DataModels
         {
             throw new NotImplementedException();
         }
+
+        //Any model that supports initialization calls will need to implement this call and ensure that TranslationUtilities.InitializeData refers to it
+        //as well. Note there is no abstract definition for this, as the majority of models will not support initialization.
+        public async Task Initialize(CallWrapper activeCallWrapper)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public new List<Features> GetFeatureSupport()
         {
