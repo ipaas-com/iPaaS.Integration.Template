@@ -9,6 +9,9 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <!-- XML docs feed the Development Utility's conversion function upload. CS1591 (missing XML comment) is noise for a template. -->
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +19,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="108.0.3" />
     <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="107.3.0" />
-    <PackageReference Include="System.Runtime.Caching" Version="10.0.3" />
   </ItemGroup>
 
 </Project>

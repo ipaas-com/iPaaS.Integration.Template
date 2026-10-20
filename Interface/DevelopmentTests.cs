@@ -24,7 +24,7 @@ namespace Integration.Data.Interface
             var conn = (Connection)connection;
             var wrapper = conn.CallWrapper;
 
-            DataModels.TemplateModel DevTest1 = new DataModels.TemplateModel();
+            Integration.DataModels.TemplateModel DevTest1 = new Integration.DataModels.TemplateModel();
             DevTest1.Id = 19;
             // set other properties for DevTest1
             // set your debug breakpoints in here and step through after executing your DevelopmentTest

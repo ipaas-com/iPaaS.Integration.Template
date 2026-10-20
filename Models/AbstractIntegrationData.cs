@@ -44,6 +44,7 @@ namespace Integration.DataModels
         // inheritance enabling [iPaaSIgnore]
 
         [JsonIgnore]
+        [iPaaSIgnore]
         public override object TypeId { get { return base.TypeId; } }
 
         // =====================================================
