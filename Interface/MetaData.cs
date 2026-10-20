@@ -54,10 +54,14 @@ namespace Integration.Data.Interface
         {
             var presets = new List<Preset>();
             presets.Add(new Preset() { Name = "API Url", DataType = "string", IsRequired = true, SortOrder = 0, DefaultValue = "www.myapi.com" });
-            presets.Add(new Preset() { Name = "API Key", DataType = "string", IsRequired = true, SortOrder = 1 });
+            presets.Add(new Preset() { Name = "API User", DataType = "string", IsRequired = true, SortOrder = 1 });
+            presets.Add(new Preset() { Name = "API Password", DataType = "string", IsRequired = true, SortOrder = 2 });
 
-            presets.Add(new Preset() { Name = "Multiple Choice Example", DataType = "enum", IsRequired = true, SortOrder = 2,
+            presets.Add(new Preset() { Name = "Multiple Choice Example", DataType = "enum", IsRequired = true, SortOrder = 3,
                 PresetValues = new List<PresetValue>() { new PresetValue(){ Value = "Choice A", Description = "A first choice" }, new PresetValue(){ Value = "Option B" } } });
+
+            // Read by Utilities\BatchExecution.cs when no batch size is passed in (it falls back to 10).
+            presets.Add(new Preset() { Name = "Concurrent Batch Executions", DataType = "string", IsRequired = false, SortOrder = 4, DefaultValue = "10" });
 
             return presets;
         }
@@ -125,12 +129,14 @@ namespace Integration.Data.Interface
         private TableInfo GenerateTableInfo(string name, string description, int mappingCollectionTypeId, Type type)
         {
             var table = new TableInfo() { Name = name, Description = description, MappingCollectionTypeId = mappingCollectionTypeId };
-            table.Fields = new List<Abstract.Model.FieldInfo>();
+            table.Fields = new List<Integration.Abstract.Model.FieldInfo>();
 
 
+            // Public instance members only. With no flags, GetFields() also returns const and static fields, which are not data.
+            var flags = BindingFlags.Public | BindingFlags.Instance;
             var members = new List<System.Reflection.MemberInfo>();
-            members.AddRange(type.GetProperties());
-            members.AddRange(type.GetFields());
+            members.AddRange(type.GetProperties(flags));
+            members.AddRange(type.GetFields(flags));
 
             foreach(var member in members)
             {
@@ -139,7 +145,7 @@ namespace Integration.Data.Interface
                     continue;
 
 
-                var fieldInfo = new Abstract.Model.FieldInfo
+                var fieldInfo = new Integration.Abstract.Model.FieldInfo
                 {
                     Name = member.Name,
                     Type = GetFieldType(member) //Add the initial guess at the field type

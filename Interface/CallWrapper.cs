@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Runtime.Serialization;
 using static Integration.Constants;
-using System.Runtime.Caching;
+using System.Collections.Concurrent;
 
 namespace Integration.Data.Interface
 {
@@ -39,7 +39,7 @@ namespace Integration.Data.Interface
             _integrationSettings = (Settings)settings;
             _integrationConnection = (Connection)connection;
 
-            _integrationClient = new RestClient(_integrationSettings.Url);
+            _integrationClient = new RestClient(_integrationSettings.APIUrl);
             _integrationClient.AddDefaultHeader("Content-Type", "application/json");
             _integrationClient.AddDefaultHeader("Accept", "application/json");
             _integrationClient.UseSerializer(() => new Utilities.RestSharpNewtonsoftSerializer());
@@ -91,20 +91,22 @@ namespace Integration.Data.Interface
             return "Unknown Issue Executing ValidateConnection";
         }
 
-        //Some calls, especially TableEntryAsync are expensive and often repeated during the course of a single transfer. We use .NET's built in MemoryCache
-        //  feature to store cached values. This cache exists only through the life of a single transfer.
-        private static MemoryCache _memoryCache;
-        public static void ValidateMemoryCache()
-        {
-            if (_memoryCache == null)
-                _memoryCache = new MemoryCache($"{Identity.AppName}:General");
-        }
+        //Some calls, especially TableEntryAsync are expensive and often repeated during the course of a single transfer. We use a small in-memory dictionary
+        //  with a per-entry expiry to store cached values. (System.Runtime.Caching is deliberately not used: the Development Utility cannot load it.)
+        private static readonly ConcurrentDictionary<string, (object Value, DateTimeOffset Expires)> _memoryCache = new ConcurrentDictionary<string, (object, DateTimeOffset)>();
+        private static readonly TimeSpan _cacheLifetime = TimeSpan.FromSeconds(60);
 
         public object CheckCache(string cacheKey, string location)
         {
-            //Initialize (if necessary) and search for cached data
-            ValidateMemoryCache();
-            var cachedVal = _memoryCache.Get(cacheKey);
+            //Search for cached data, discarding it if it has expired
+            object cachedVal = null;
+            if (_memoryCache.TryGetValue(cacheKey, out var entry))
+            {
+                if (entry.Expires > DateTimeOffset.Now)
+                    cachedVal = entry.Value;
+                else
+                    _memoryCache.TryRemove(cacheKey, out _);
+            }
 
             if (cachedVal != null)
                 _integrationConnection.Logger.Logger_Technical("V", location, $"Returning cached value for table data: {cacheKey}");
@@ -113,8 +115,9 @@ namespace Integration.Data.Interface
 
         public void SaveToCache(string cacheKey, object value)
         {
-            ValidateMemoryCache();
-            _memoryCache.Add(cacheKey, value, DateTimeOffset.Now.AddSeconds(60));//Add any data returned here to the local cache
+            if (value == null)
+                return;
+            _memoryCache[cacheKey] = (value, DateTimeOffset.Now.Add(_cacheLifetime));//Add any data returned here to the local cache
         }
     }
 }

@@ -11,8 +11,9 @@ namespace Integration.Data.Interface
     // GetSetting method will collect the Preset value defined in the integration console or in MetaData.cs\MetaData\GetPresets().
     public class Settings : Integration.Abstract.Settings
     {
-        public string Url { get { return this.GetSetting("API Url", required: true); } }
+        public string APIUrl { get { return this.GetSetting("API Url", required: true); } }
         public string APIUser { get { return this.GetSetting("API User", required: true); } }
         public string APIPassword { get { return this.GetSetting("API Password", required: true); } }
+        public string MultipleChoiceExample { get { return this.GetSetting("Multiple Choice Example", required: true); } }
     }
 }

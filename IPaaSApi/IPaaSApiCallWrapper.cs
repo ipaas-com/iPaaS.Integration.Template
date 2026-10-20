@@ -374,12 +374,12 @@ namespace Integration.Data.IPaaSApi
 
         /// <summary>
         /// Searches for customers by email address.
-        /// Calls GET v2/Customers?action=equals&EmailAddress={email}.
+        /// Calls GET v2/Customers?filter=EmailAddress={email}&action=equals.
         /// </summary>
         public async Task<List<CustomerResponse>> Customer_SearchByEmailAsync(string email)
         {
             var client = CreateClient(EndpointURL.Customers);
-            var request = createRequest(client, $"v2/Customers?action=equals&EmailAddress={Uri.EscapeDataString(email)}");
+            var request = createRequest(client, $"v2/Customers?filter=EmailAddress={Uri.EscapeDataString(email)}&action=equals");
 
             var resp = await client.ExecuteAsync(request);
             HandleResponse(resp, "Customer_SearchByEmailAsync", notFoundIsError: false);

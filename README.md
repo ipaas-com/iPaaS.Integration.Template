@@ -102,11 +102,14 @@ If this is your first integration project, we recommend choosing a single Mappin
 
 ## SETUP
 
-Create .NET Core 3.1 Class Library project named {{your integration name}}.Data
+Create a .NET 8 Class Library project named {{your integration name}}.Data (or start from this template's `Integration.Template.csproj`, which already targets net8.0)
 1. Register Nuget Dependencies
-    * ipaas.integration.sdk (latest stable).  The documentation for the abstract methods contained within can be found [iPaaS.com Integration SDK](https://github.com/ipaas-com/iPaaS.Integration.SDK).
-    * NewtonsoftJSON (latest stable)
-    * RestSharp (latest stable)
+    * ipaas.integration.sdk (2.0.5, the version this template is pinned to).  The documentation for the abstract methods contained within can be found [iPaaS.com Integration SDK](https://github.com/ipaas-com/iPaaS.Integration.SDK).
+    * NewtonsoftJSON (as pinned in `Integration.Template.csproj`)
+    * RestSharp (as pinned in `Integration.Template.csproj`)
+    * Do not add `System.Runtime.Caching`. The Development Utility does not ship it, so an integration that references it fails to load. `CallWrapper.cs` uses a small expiring dictionary instead.
+    * Keep the template's `nuget.config` (nuget.org only). A private feed that the build machine cannot reach makes restore fail with a 401.
+    * Keep `GenerateDocumentationFile` enabled in the csproj. The Development Utility reads the XML documentation file when it uploads conversion functions.
 
 2. Copy the contents of this template file structure to your new project:
     * Helpers
@@ -117,6 +120,10 @@ Create .NET Core 3.1 Class Library project named {{your integration name}}.Data
 
 `Important: The Interface files within this Template project are precoded to belong to the Namespace "Integration.Data".
 All of the files within the Interface folder should be changed to have a namespace that matches {{your integration name}}.Data`
+
+`The SDK's own namespaces (Integration.Abstract, Integration.Abstract.Model) and this template's Integration.DataModels and Integration.Constants are separate from the Integration.Data namespace you rename. After renaming, fully qualify references to them (for example Integration.DataModels.TemplateModel and Integration.Abstract.Model.FieldInfo), because relative references like DataModels.X or Abstract.Model.X only resolve while the file is inside the Integration namespace.`
+
+`Every preset your code reads must be declared in MetaData.cs\GetPresets(), and each Settings property should be named after its preset with the spaces removed (preset "API Url" is Settings.APIUrl).`
 
 ## Interface Definitions
 
