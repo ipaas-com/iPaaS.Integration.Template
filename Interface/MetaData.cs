@@ -67,11 +67,11 @@ namespace Integration.Data.Interface
         }
 
         // Enter 1 for each supported MappingCollection
-        // Example: tables.Add(GenerateTableInfo("Customer", "Helptext", (int) Integration.Constants.TM_MappingCollectionType.CUSTOMER, typeof(Customer)));
+        // Example: tables.Add(GenerateTableInfo("Customer", "The ECommerce Customer table", (int) Integration.Constants.TM_MappingCollectionType.CUSTOMER, typeof(Customer)));
         private List<TableInfo> GetTables()
         {
             var tables = new List<TableInfo>();
-            tables.Add(GenerateTableInfo("Customer", "Helptext", (int)Integration.Constants.TM_MappingCollectionType.CUSTOMER, typeof(TemplateModel)));
+            tables.Add(GenerateTableInfo("Customer", "The ECommerce Customer Table", (int)Integration.Constants.TM_MappingCollectionType.CUSTOMER, typeof(TemplateModel)));
             return tables;
         }
 
